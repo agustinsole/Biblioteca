@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ver Libro-Premio</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1>Relación Libro-Premio</h1>
+<p><strong>ID:</strong> <span th:text="${libroPremio.id}"></span></p>
+<p><strong>Libro:</strong> <span th:text="${libroPremio.libro != null ? libroPremio.libro.nomLibro : 'N/A'}"></span></p>
+<p><strong>Premio:</strong> <span th:text="${libroPremio.premio != null ? libroPremio.premio.nomPremio : 'N/A'}"></span></p>
+<a th:href="@{/libro-premios}">Volver</a>
+</body>
+</html>

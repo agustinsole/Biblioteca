@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Autor-Premio</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${autorPremio.id} != null ? 'Editar Autor-Premio' : 'Crear Autor-Premio'"></h1>
+<form th:action="@{/autor-premio}" th:object="${autorPremio}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div>
+        <label>Autor</label>
+        <select th:field="*{autor.id}">
+            <option th:value="" th:text="'-- selecciona autor --'"></option>
+            <option th:each="autor : ${autores}" th:value="${autor.id}" th:text="${autor.nomAutor}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Premio</label>
+        <select th:field="*{premio.id}">
+            <option th:value="" th:text="'-- selecciona premio --'"></option>
+            <option th:each="premio : ${premios}" th:value="${premio.id}" th:text="${premio.nomPremio}"></option>
+        </select>
+    </div>
+    <div><label>Año</label><input type="number" th:field="*{anio}" /></div>
+    <div><button type="submit">Guardar</button><a th:href="@{/autor-premio}">Cancelar</a></div>
+</form>
+</body>
+</html>

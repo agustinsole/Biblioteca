@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ver Autor-Libro</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1>Relación Autor-Libro</h1>
+<p><strong>ID:</strong> <span th:text="${autorLibro.id}"></span></p>
+<p><strong>Autor:</strong> <span th:text="${autorLibro.autor != null ? autorLibro.autor.nomAutor : 'N/A'}"></span></p>
+<p><strong>Libro:</strong> <span th:text="${autorLibro.libro != null ? autorLibro.libro.nomLibro : 'N/A'}"></span></p>
+<a th:href="@{/autor-libro}">Volver</a>
+</body>
+</html>

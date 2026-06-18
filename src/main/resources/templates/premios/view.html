@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ver Premio</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${premio.nomPremio}"></h1>
+<p><strong>País:</strong> <span th:text="${premio.pais != null ? premio.pais.nomPais : 'N/A'}"></span></p>
+<p><strong>Tipo:</strong> <span th:text="${premio.tipo}"></span></p>
+<a th:href="@{/premios}">Volver</a>
+</body>
+</html>

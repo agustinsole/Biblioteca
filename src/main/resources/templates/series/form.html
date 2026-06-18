@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Serie</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${serie.id} != null ? 'Editar Serie' : 'Crear Serie'"></h1>
+<form th:action="@{/series}" th:object="${serie}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div><label>Denominación</label><input type="text" th:field="*{denominacion}" /></div>
+    <div><button type="submit">Guardar</button><a th:href="@{/series}">Cancelar</a></div>
+</form>
+</body>
+</html>

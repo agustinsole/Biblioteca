@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Series</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1>Series</h1>
+<a th:href="@{/series/new}">Crear serie</a>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Denominación</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="serie : ${series}">
+        <td th:text="${serie.id}"></td>
+        <td th:text="${serie.denominacion}"></td>
+        <td class="text-center">
+            <a th:href="@{'/series/view/' + ${serie.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="#fff"/>
+                </svg>
+            </a>
+            <a th:href="@{'/series/edit/' + ${serie.id}}" class="btn btn-outline-secondary btn-sm p-1 me-1" title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L4.207 14.793 1 15l.207-3.207L12.146.854z"/>
+                </svg>
+            </a>
+            <form th:action="@{'/series/delete/' + ${serie.id}}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Borrar" onclick="return confirm('Confirma borrado?');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                    </svg>
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

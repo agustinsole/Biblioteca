@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ver Autor</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container mt-4">
+    <h1 th:text="${autor.nomAutor} + ' ' + ${autor.apellido1} + ' ' + ${autor.apellido2}" style="text-transform: uppercase;"></h1>
+    
+    <!-- Foto y Libros lado a lado -->
+    <div class="row mb-4">
+        <!-- Foto a la izquierda -->
+        <div class="col-md-4">
+            <img th:if="${autor.foto != null}" th:src="@{/img/autores/{foto}(foto=${autor.foto})}" th:alt="'Foto de ' + ${autor.nomAutor}" class="img-fluid rounded" />
+            <span th:if="${autor.foto == null}">No hay foto disponible</span>
+        </div>
+        
+        <!-- Libros a la derecha en tabla -->
+        <div class="col-md-8">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width:80px;">Portada</th>
+                            <th>Título</th>
+                            <th style="width:80px;" class="text-center">Año</th>
+                            <th style="width:180px;">Premios</th>
+                            <th style="width:180px;">Serie / Nº</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="libro : ${autor.librosOrdenadosPorAnoAsc}">
+                            <td class="text-center">
+                                <a th:if="${libro.portada != null}" th:href="@{/libros/view/{id}(id=${libro.id})}">
+                                    <img th:src="@{/img/libros/{portada}(portada=${libro.portada})}" th:alt="${libro.nomLibro}" style="width:60px;height:auto;object-fit:cover;" class="rounded" />
+                                </a>
+                                <span th:if="${libro.portada == null}" class="small text-muted">Sin portada</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/libros/view/{id}(id=${libro.id})}" th:text="${libro.nomLibro}" style="text-decoration:none;font-size:1.1rem;font-weight:700;"></a>
+                            </td>
+                            <td class="text-center" th:text="${libro.ano}"></td>
+                            <td style="font-size:0.85rem;line-height:1.2;">
+                                <span th:if="${libro.libroPremios.isEmpty()}" class="text-muted">Sin premios</span>
+                                <span th:each="lp, iterStat : ${libro.libroPremios}">
+                                    <span th:text="${lp.premio.nomPremio}"></span><span th:if="${!iterStat.last}">, </span>
+                                </span>
+                            </td>
+                            <td style="font-size:0.85rem;line-height:1.2;">
+                                <span th:if="${libro.serie == null}">Sin serie</span>
+                                <span th:if="${libro.serie != null}" th:text="${libro.serie.denominacion}"></span>
+                                <span th:if="${libro.indiceSerie != null}"> (#<span th:text="${libro.indiceSerie}"></span>)</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${autor.librosOrdenadosPorAnoAsc.isEmpty()}">
+                            <td colspan="5" class="text-center text-muted">Sin libros registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Información de nacimiento en una línea -->
+    <div class="mb-3">
+        <p class="mb-1">
+            <strong>Nacido/a en</strong> <span th:text="${autor.localidad} + ' (' + (${autor.pais != null ? autor.pais.nomPais : 'N/A'}) + ')'"></span>
+            <span th:if="${autor.fechaNacimiento != null}"> • <strong>Nacimiento:</strong> <span th:text="${#dates.format(autor.fechaNacimiento, 'dd/MM/yyyy')}"></span></span>
+            <span th:if="${autor.fechaDefuncion != null}"> • <strong>Defunción:</strong> <span th:text="${#dates.format(autor.fechaDefuncion, 'dd/MM/yyyy')}"></span></span>
+            <span th:if="${autor.fechaDefuncion == null and autor.fechaNacimiento != null}"> • <strong>Edad:</strong> <span th:text="${T(java.time.Period).between(autor.fechaNacimiento.toLocalDate(), T(java.time.LocalDate).now()).getYears()}"></span></span>
+        </p>
+    </div>
+
+    <div class="mb-4">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Premio</th>
+                        <th style="width:120px;" class="text-center">Año</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ap : ${autor.premiosOrdenadosPorAnioAsc}">
+                        <td class="fw-semibold" th:text="${ap.premio.nomPremio}"></td>
+                        <td class="text-center" th:text="${ap.anio != null ? ap.anio : 'N/D'}"></td>
+                    </tr>
+                    <tr th:if="${autor.premiosOrdenadosPorAnioAsc.isEmpty()}">
+                        <td colspan="2" class="text-center text-muted py-3">Este autor no tiene premios registrados</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Biografía sin tabulación -->
+    <div class="mb-4">
+        <h5>Biografía</h5>
+        <p th:text="${autor.biografia}" style="text-align:justify;line-height:1.6;"></p>
+    </div>
+    
+    <a th:href="@{/autores}" class="btn btn-secondary">Volver</a>
+</div>
+</body>
+</html>

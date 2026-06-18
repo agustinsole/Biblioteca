@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>País</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${pais.id} != null ? 'Editar País' : 'Crear País'"></h1>
+<form th:action="@{/paises}" th:object="${pais}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div><label>Nombre</label><input type="text" th:field="*{nomPais}" /></div>
+    <div><label>Bandera</label><input type="text" th:field="*{bandera}" /></div>
+    <div><button type="submit">Guardar</button><a th:href="@{/paises}">Cancelar</a></div>
+</form>
+</body>
+</html>

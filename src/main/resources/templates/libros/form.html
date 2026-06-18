@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Formulario Libro</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${libro.id} != null ? 'Editar Libro' : 'Crear Libro'"></h1>
+<form th:action="@{/libros}" th:object="${libro}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div><label>Título</label><input type="text" th:field="*{nomLibro}" /></div>
+    <div><label>Año</label><input type="number" th:field="*{ano}" /></div>
+    <div><label>Portada</label><input type="text" th:field="*{portada}" /></div>
+    <div><label>Nombre de archivo</label><input type="text" th:field="*{nomArchivo}" /></div>
+    <div><label>Película</label><input type="text" th:field="*{pelicula}" /></div>
+    <div><label>Comentario</label><textarea th:field="*{comentario}" rows="4"></textarea></div>
+    <div>
+        <label>Serie</label>
+        <select th:field="*{serie.id}">
+            <option value="">-- Selecciona --</option>
+            <option th:each="serie : ${series}" th:value="${serie.id}" th:text="${serie.denominacion}"></option>
+        </select>
+    </div>
+    <div><label>Índice de serie</label><input type="number" th:field="*{indiceSerie}" /></div>
+    <div><button type="submit">Guardar</button><a th:href="@{/libros}">Cancelar</a></div>
+</form>
+</body>
+</html>

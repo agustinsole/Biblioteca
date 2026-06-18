@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ver País</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${pais.nomPais}"></h1>
+<p><strong>Bandera:</strong> <span th:text="${pais.bandera}"></span></p>
+<a th:href="@{/paises}">Volver</a>
+</body>
+</html>

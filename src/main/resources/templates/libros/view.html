@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ver Libro</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${libro.nomLibro}"></h1>
+<p><strong>Año:</strong> <span th:text="${libro.ano}"></span></p>
+<p><strong>Portada:</strong> <span th:text="${libro.portada}"></span></p>
+<p><strong>Archivo:</strong> <span th:text="${libro.nomArchivo}"></span></p>
+<p><strong>Película:</strong> <span th:text="${libro.pelicula}"></span></p>
+<p><strong>Serie:</strong> <span th:text="${libro.serie != null ? libro.serie.denominacion : 'N/A'}"></span></p>
+<p><strong>Índice de serie:</strong> <span th:text="${libro.indiceSerie}"></span></p>
+<p><strong>Comentario:</strong> <span th:text="${libro.comentario}"></span></p>
+<a th:href="@{/libros}">Volver</a>
+</body>
+</html>

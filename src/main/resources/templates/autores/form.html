@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Autor</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/autores}" th:object="${autor}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div th:if="${errorMessage != null or #fields.hasErrors()}" class="alert alert-danger">
+                    <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+                    <ul th:if="${#fields.hasErrors()}">
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-auto" style="min-width: 160px; max-width: 180px;">
+                        <label class="form-label small">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{nomAutor}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 150px;">
+                        <label class="form-label small">Apellido 1</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{apellido1}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 150px;">
+                        <label class="form-label small">Apellido 2</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{apellido2}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 130px; max-width: 140px;">
+                        <label class="form-label small">Fecha nac.</label>
+                        <input type="date" class="form-control form-control-sm" th:field="*{fechaNacimiento}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 130px; max-width: 140px;">
+                        <label class="form-label small">Fecha def.</label>
+                        <input type="date" class="form-control form-control-sm" th:field="*{fechaDefuncion}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 160px;">
+                        <label class="form-label small">País</label>
+                        <select class="form-select form-select-sm" th:field="*{pais.id}">
+                            <option value="">-- Selecciona --</option>
+                            <option th:each="pais : ${paises}" th:value="${pais.id}" th:text="${pais.nomPais}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 160px;">
+                        <label class="form-label small">Foto</label>
+                        <select class="form-select form-select-sm" th:field="*{foto}">
+                            <option value="">-- Selecciona archivo --</option>
+                            <option th:each="foto : ${fotos}" th:value="${foto}" th:text="${foto}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 160px;">
+                        <label class="form-label small">Localidad</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{localidad}" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Biografía</label>
+                        <textarea class="form-control" th:field="*{biografia}" rows="6"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Premios como autor</h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="addAwardBtn">Añadir premio</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered" id="awardsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:360px;">Premio</th>
+                                    <th style="width:100px;">Año</th>
+                                    <th style="width:90px;" class="text-center">Eliminar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="awardsContainer">
+                                <tr th:each="premioItem, iterStat : *{autorPremios}" class="award-row">
+                                    <td>
+                                        <input type="hidden" th:field="*{autorPremios[__${iterStat.index}__].id}" />
+                                        <select class="form-select" th:field="*{autorPremios[__${iterStat.index}__].premio.id}">
+                                            <option value="">-- Selecciona --</option>
+                                            <option th:each="premio : ${premiosAutor}" th:value="${premio.id}" th:text="${premio.nomPremio}" th:selected="${premio.id == premioItem.premio.id}"></option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" min="0" th:field="*{autorPremios[__${iterStat.index}__].anio}" />
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-award-btn" title="Eliminar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex align-items-center gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/autores}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+            <div class="mt-4" th:if="${autor.foto}">
+                <h5 class="mb-2">Vista previa de la foto</h5>
+                <img th:src="@{/img/autores/{file}(file=${autor.foto})}" alt="Foto autor" class="img-thumbnail" style="max-height: 220px;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="awardRowTemplate">
+    <tr class="award-row">
+        <td>
+            <input type="hidden" class="award-id-field" name="autorPremios[INDEX].id" />
+            <select class="form-select award-premio-field" name="autorPremios[INDEX].premio.id">
+                <option value="">-- Selecciona --</option>
+                <th:block th:each="premio : ${premiosAutor}">
+                    <option th:value="${premio.id}" th:text="${premio.nomPremio}"></option>
+                </th:block>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="form-control award-year-field" min="0" name="autorPremios[INDEX].anio" />
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-award-btn" title="Eliminar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                    <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                </svg>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addAwardBtn = document.getElementById('addAwardBtn');
+        const awardsContainer = document.getElementById('awardsContainer');
+        const awardRowTemplate = document.getElementById('awardRowTemplate').innerHTML;
+
+        const updateIndexes = () => {
+            const rows = awardsContainer.querySelectorAll('.award-row');
+            rows.forEach((row, index) => {
+                row.querySelectorAll('input, select').forEach(field => {
+                    if (field.name) {
+                        field.name = field.name.replace(/autorPremios\[\d+\]/, `autorPremios[${index}]`);
+                    }
+                });
+            });
+        };
+
+        const removeAward = (button) => {
+            const row = button.closest('.award-row');
+            if (!row) return;
+            const confirmed = window.confirm('¿Confirmas eliminar este premio?');
+            if (!confirmed) return;
+            row.remove();
+            updateIndexes();
+        };
+
+        awardsContainer.addEventListener('click', (event) => {
+            if (event.target.matches('.remove-award-btn')) {
+                removeAward(event.target);
+            }
+        });
+
+        addAwardBtn.addEventListener('click', () => {
+            const newRowHtml = awardRowTemplate.replace(/INDEX/g, awardsContainer.querySelectorAll('.award-row').length);
+            const template = document.createElement('template');
+            template.innerHTML = newRowHtml.trim();
+            awardsContainer.appendChild(template.content.firstChild);
+        });
+
+        // Solo delegación para eliminar premios (el botón de editar se ha eliminado)
+    });
+</script>
+</body>
+</html>

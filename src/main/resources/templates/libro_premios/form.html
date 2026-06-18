@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Libro-Premios</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${libroPremio.id} != null ? 'Editar Libro-Premio' : 'Crear Libro-Premio'"></h1>
+<form th:action="@{/libro-premios}" th:object="${libroPremio}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div>
+        <label>Libro</label>
+        <select th:field="*{libro.id}">
+            <option th:value="" th:text="'-- selecciona libro --'"></option>
+            <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.nomLibro}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Premio</label>
+        <select th:field="*{premio.id}">
+            <option th:value="" th:text="'-- selecciona premio --'"></option>
+            <option th:each="premio : ${premios}" th:value="${premio.id}" th:text="${premio.nomPremio}"></option>
+        </select>
+    </div>
+    <div><button type="submit">Guardar</button><a th:href="@{/libro-premios}">Cancelar</a></div>
+</form>
+</body>
+</html>

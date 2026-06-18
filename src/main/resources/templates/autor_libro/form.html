@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Autor-Libro</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body>
+<h1 th:text="${autorLibro.id} != null ? 'Editar relación Autor-Libro' : 'Crear relación Autor-Libro'"></h1>
+<form th:action="@{/autor-libro}" th:object="${autorLibro}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <div>
+        <label>Autor</label>
+        <select th:field="*{autor.id}">
+            <option th:value="" th:text="'-- selecciona autor --'"></option>
+            <option th:each="autor : ${autores}" th:value="${autor.id}" th:text="${autor.nomAutor}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Libro</label>
+        <select th:field="*{libro.id}">
+            <option th:value="" th:text="'-- selecciona libro --'"></option>
+            <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.nomLibro}"></option>
+        </select>
+    </div>
+    <div><button type="submit">Guardar</button><a th:href="@{/autor-libro}">Cancelar</a></div>
+</form>
+</body>
+</html>
