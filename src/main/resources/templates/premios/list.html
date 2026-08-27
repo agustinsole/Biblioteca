@@ -6,47 +6,114 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1>Premios</h1>
-<a th:href="@{/premios/new}">Crear premio</a>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>País</th>
-        <th>Tipo</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="premio : ${premios}">
-        <td th:text="${premio.id}"></td>
-        <td th:text="${premio.nomPremio}"></td>
-        <td th:text="${premio.pais != null ? premio.pais.nomPais : 'N/A'}"></td>
-        <td th:text="${premio.tipo}"></td>
-        <td class="text-center">
-            <a th:href="@{'/premios/view/' + ${premio.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
-                    <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="#fff"/>
-                </svg>
-            </a>
-            <a th:href="@{'/premios/edit/' + ${premio.id}}" class="btn btn-outline-secondary btn-sm p-1 me-1" title="Editar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L4.207 14.793 1 15l.207-3.207L12.146.854z"/>
-                </svg>
-            </a>
-            <form th:action="@{'/premios/delete/' + ${premio.id}}" method="post" style="display:inline">
-                <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Borrar" onclick="return confirm('Confirma borrado?');">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
-                        <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
-                    </svg>
-                </button>
+<div class="container-fluid mt-4">
+    <div class="d-flex flex-nowrap align-items-center gap-2 mb-3">
+        <nav aria-label="Paginación de premios" th:if="${premiosPage.totalPages > 1}" class="flex-shrink-0">
+            <ul class="pagination mb-0" style="font-size: 0.85rem;">
+                <li class="page-item" th:classappend="${premiosPage.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/premios(page=0, tipo=${tipo})}" tabindex="-1">Prim.</a>
+                </li>
+                <li class="page-item" th:classappend="${premiosPage.first} ? ' disabled'">
+                    <a class="page-link" th:if="${!premiosPage.first}" th:href="@{/premios(page=${currentPage - 1}, tipo=${tipo})}">Ant.</a>
+                    <span class="page-link" th:if="${premiosPage.first}">Ant.</span>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(currentPage, currentPage + 4 < premiosPage.totalPages ? currentPage + 4 : premiosPage.totalPages - 1)}" th:classappend="${i == currentPage} ? ' active'">
+                    <a class="page-link" th:href="@{/premios(page=${i}, tipo=${tipo})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${premiosPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!premiosPage.last}" th:href="@{/premios(page=${currentPage + 1}, tipo=${tipo})}">Sig.</a>
+                    <span class="page-link" th:if="${premiosPage.last}">Sig.</span>
+                </li>
+                <li class="page-item" th:classappend="${premiosPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!premiosPage.last}" th:href="@{/premios(page=${premiosPage.totalPages - 1}, tipo=${tipo})}">Últ.</a>
+                    <span class="page-link" th:if="${premiosPage.last}">Últ.</span>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex-grow-1 d-flex justify-content-center">
+            <form th:action="@{/premios}" method="get" class="d-flex align-items-center gap-2">
+                <input type="hidden" name="page" value="0" />
+                <select name="tipo" class="form-select form-select-sm" style="width: 220px;" onchange="this.form.submit()">
+                    <option value="" th:selected="${tipo == null or #strings.isEmpty(tipo)}">Todos los tipos</option>
+                    <option value="A" th:selected="${tipo == 'A'}">Tipo A</option>
+                    <option value="L" th:selected="${tipo == 'L'}">Tipo L</option>
+                </select>
             </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+        </div>
+        <a th:href="@{/}" class="btn btn-outline-secondary flex-shrink-0">Inicio</a>
+        <a th:href="@{/premios/new}" class="btn btn-success flex-shrink-0">Crear premio</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead>
+            <tr>
+                <th style="width:72px;">Logo</th>
+                <th style="width:320px;">Nombre</th>
+                <th style="width:220px;">País</th>
+                <th style="width:90px;">Tipo</th>
+                <th style="width:220px;">Logotipo</th>
+                <th style="width:140px;" class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="premio : ${premiosPage.content}">
+                <td class="text-center">
+                    <img th:if="${premio.logotipo != null and !#strings.isEmpty(premio.logotipo)}"
+                         th:src="@{/img/premios/{logotipo}(logotipo=${premio.logotipo})}"
+                         th:alt="${premio.nomPremio}"
+                         style="width:44px;height:44px;object-fit:contain;" class="rounded border bg-white p-1" />
+                    <span th:if="${premio.logotipo == null or #strings.isEmpty(premio.logotipo)}" class="text-muted">---</span>
+                </td>
+                <td>
+                    <strong th:text="${premio.nomPremio}"></strong>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <img th:if="${premio.pais != null and premio.pais.bandera != null and !#strings.isEmpty(premio.pais.bandera)}"
+                             th:src="@{/img/paises/{bandera}(bandera=${premio.pais.bandera})}"
+                                alt=""
+                                aria-hidden="true"
+                             style="width:24px;height:18px;object-fit:cover;" class="rounded border" />
+                        <span th:text="${premio.pais != null ? premio.pais.nomPais : 'N/A'}"></span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge rounded-pill"
+                          th:classappend="${premio.tipo == 'A'} ? ' text-bg-primary' : (${premio.tipo == 'L'} ? ' text-bg-success' : ' text-bg-secondary')"
+                          th:text="${premio.tipo}"></span>
+                </td>
+                <td>
+                    <span th:text="${premio.logotipo != null and !#strings.isEmpty(premio.logotipo) ? premio.logotipo : 'N/A'}"></span>
+                </td>
+                <td class="text-center">
+                    <a th:href="@{'/premios/view/' + ${premio.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="#fff"/>
+                        </svg>
+                    </a>
+                    <a th:href="@{'/premios/edit/' + ${premio.id}}" class="btn btn-outline-secondary btn-sm p-1 me-1" title="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L4.207 14.793 1 15l.207-3.207L12.146.854z"/>
+                        </svg>
+                    </a>
+                    <form th:action="@{'/premios/delete/' + ${premio.id}}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Borrar" onclick="return confirm('Confirma borrado?');">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${premiosPage.content.isEmpty()}">
+                <td colspan="6" class="text-center text-muted">Sin premios registrados</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

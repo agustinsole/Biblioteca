@@ -6,8 +6,149 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1 th:text="${pais.nomPais}"></h1>
-<p><strong>Bandera:</strong> <span th:text="${pais.bandera}"></span></p>
-<a th:href="@{/paises}">Volver</a>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-4 text-center">
+        <img th:if="${pais.bandera != null and !#strings.isEmpty(pais.bandera)}"
+             th:src="@{/img/paises/{bandera}(bandera=${pais.bandera})}"
+             th:alt="${pais.nomPais}"
+             class="rounded border"
+             style="width: 56px; height: 40px; object-fit: cover;" />
+        <h1 class="mb-0" th:text="${pais.nomPais}"></h1>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-xl-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Autores del país</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover table-bordered align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width:72px;">Foto</th>
+                                <th>Nombre y apellidos</th>
+                                <th>Localidad</th>
+                                <th style="width:110px;">F. Nac.</th>
+                                <th style="width:110px;">F. Def.</th>
+                                <th style="width:70px;" class="text-center">Edad</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="autor : ${autoresPais}">
+                                <td class="text-center">
+                                    <a th:if="${autor.foto != null and !#strings.isEmpty(autor.foto)}"
+                                       href="#"
+                                       class="foto-modal-trigger"
+                                       th:data-src="@{/img/autores/{foto}(foto=${autor.foto})}"
+                                       th:data-title="${autor.nomAutor} + ' ' + ${autor.apellido1 == null ? '' : autor.apellido1} + ' ' + ${autor.apellido2 == null ? '' : autor.apellido2}">
+                                        <img th:src="@{/img/autores/{foto}(foto=${autor.foto})}"
+                                             th:alt="${autor.nomAutor}"
+                                             class="rounded"
+                                             style="width:56px;height:56px;object-fit:cover;cursor:pointer;" />
+                                    </a>
+                                    <span th:if="${autor.foto == null or #strings.isEmpty(autor.foto)}">---</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/autores/view/' + ${autor.id}}"
+                                       class="text-decoration-none fw-bold text-black"
+                                       th:text="${autor.nomAutor} + ' ' + ${autor.apellido1 == null ? '' : autor.apellido1} + ' ' + ${autor.apellido2 == null ? '' : autor.apellido2}"></a>
+                                </td>
+                                <td th:text="${autor.localidad == null or #strings.isEmpty(#strings.trim(autor.localidad)) ? '---' : autor.localidad}"></td>
+                                <td th:text="${autor.fechaNacimiento != null ? #dates.format(autor.fechaNacimiento, 'dd/MM/yyyy') : '---'}"></td>
+                                <td th:text="${autor.fechaDefuncion != null ? #dates.format(autor.fechaDefuncion, 'dd/MM/yyyy') : '---'}"></td>
+                                <td class="text-center"
+                                    th:text="${autor.fechaDefuncion != null ? '---' : (autor.fechaNacimiento == null ? '---' : T(java.time.Period).between(autor.fechaNacimiento.toLocalDate(), T(java.time.LocalDate).now()).getYears())}"></td>
+                            </tr>
+                            <tr th:if="${autoresPais.isEmpty()}">
+                                <td colspan="6" class="text-center text-muted">No hay autores para este país</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold">Premios del país</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover table-bordered align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width:72px;">Logo</th>
+                                <th>Nombre del premio</th>
+                                <th style="width:70px;" class="text-center">Tipo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="premio : ${premiosPais}">
+                                <td class="text-center">
+                                    <img th:if="${premio.logotipo != null and !#strings.isEmpty(premio.logotipo)}"
+                                         th:src="@{/img/premios/{logo}(logo=${premio.logotipo})}"
+                                         th:alt="${premio.nomPremio}"
+                                         style="width:42px;height:42px;object-fit:contain;" />
+                                    <span th:if="${premio.logotipo == null or #strings.isEmpty(premio.logotipo)}">---</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/premios/view/' + ${premio.id}}"
+                                       class="text-decoration-none fw-bold text-black"
+                                       th:text="${premio.nomPremio}"></a>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge rounded-pill"
+                                          th:classappend="${premio.tipo == 'A'} ? ' text-bg-primary' : (${premio.tipo == 'L'} ? ' text-bg-success' : ' text-bg-secondary')"
+                                          th:text="${premio.tipo}"></span>
+                                </td>
+                            </tr>
+                            <tr th:if="${premiosPais.isEmpty()}">
+                                <td colspan="3" class="text-center text-muted">No hay premios para este país</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/paises}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+</div>
+
+<div class="modal fade" id="fotoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fotoModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Foto del autor" class="img-fluid rounded" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modalElement = document.getElementById('fotoModal');
+    const fotoModal = new bootstrap.Modal(modalElement);
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('fotoModalTitle');
+
+    document.querySelectorAll('.foto-modal-trigger').forEach(el => {
+        el.addEventListener('click', event => {
+            event.preventDefault();
+            modalImage.src = el.dataset.src;
+            modalTitle.textContent = el.dataset.title;
+            fotoModal.show();
+        });
+    });
+});
+</script>
 </body>
 </html>

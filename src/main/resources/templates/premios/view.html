@@ -6,9 +6,173 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1 th:text="${premio.nomPremio}"></h1>
-<p><strong>País:</strong> <span th:text="${premio.pais != null ? premio.pais.nomPais : 'N/A'}"></span></p>
-<p><strong>Tipo:</strong> <span th:text="${premio.tipo}"></span></p>
-<a th:href="@{/premios}">Volver</a>
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                <div class="d-flex align-items-center gap-3">
+                    <img th:if="${premio.logotipo != null and !#strings.isEmpty(premio.logotipo)}"
+                         th:src="@{/img/premios/{logotipo}(logotipo=${premio.logotipo})}"
+                         th:alt="${premio.nomPremio}"
+                         style="width:48px;height:48px;object-fit:contain;" class="rounded border bg-white p-1 flex-shrink-0" />
+                    <div>
+                        <h1 class="h3 mb-1" th:text="${premio.nomPremio}"></h1>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div class="d-flex align-items-center gap-1">
+                                <img th:if="${premio.pais != null and premio.pais.bandera != null and !#strings.isEmpty(premio.pais.bandera)}"
+                                     th:src="@{/img/paises/{bandera}(bandera=${premio.pais.bandera})}"
+                                     alt="" aria-hidden="true"
+                                     style="width:24px;height:18px;object-fit:cover;" class="rounded border" />
+                                <span th:text="${premio.pais != null ? premio.pais.nomPais : 'N/A'}" class="text-muted"></span>
+                            </div>
+                            <span class="badge rounded-pill"
+                                  th:classappend="${premio.tipo == 'A'} ? ' text-bg-primary' : (${premio.tipo == 'L'} ? ' text-bg-success' : ' text-bg-secondary')"
+                                  th:text="${premio.tipo}"></span>
+                        </div>
+                    </div>
+                </div>
+                <a th:href="@{/premios}" class="btn btn-outline-secondary btn-sm flex-shrink-0">Volver</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-nowrap align-items-center gap-2 mb-3"
+         th:if="${(premio.tipo == 'A' and autorPremiosPage != null and autorPremiosPage.totalPages > 1) or (premio.tipo == 'L' and libroPremiosPage != null and libroPremiosPage.totalPages > 1)}">
+
+        <nav aria-label="Paginación de premiados" class="flex-shrink-0" th:if="${premio.tipo == 'A' and autorPremiosPage != null and autorPremiosPage.totalPages > 1}">
+            <ul class="pagination mb-0" style="font-size: 0.85rem;">
+                <li class="page-item" th:classappend="${autorPremiosPage.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/premios/view/{id}(id=${premio.id}, page=0)}" tabindex="-1">Prim.</a>
+                </li>
+                <li class="page-item" th:classappend="${autorPremiosPage.first} ? ' disabled'">
+                    <a class="page-link" th:if="${!autorPremiosPage.first}" th:href="@{/premios/view/{id}(id=${premio.id}, page=${currentPage - 1})}">Ant.</a>
+                    <span class="page-link" th:if="${autorPremiosPage.first}">Ant.</span>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(currentPage, currentPage + 4 < autorPremiosPage.totalPages ? currentPage + 4 : autorPremiosPage.totalPages - 1)}" th:classappend="${i == currentPage} ? ' active'">
+                    <a class="page-link" th:href="@{/premios/view/{id}(id=${premio.id}, page=${i})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${autorPremiosPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!autorPremiosPage.last}" th:href="@{/premios/view/{id}(id=${premio.id}, page=${currentPage + 1})}">Sig.</a>
+                    <span class="page-link" th:if="${autorPremiosPage.last}">Sig.</span>
+                </li>
+                <li class="page-item" th:classappend="${autorPremiosPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!autorPremiosPage.last}" th:href="@{/premios/view/{id}(id=${premio.id}, page=${autorPremiosPage.totalPages - 1})}">Últ.</a>
+                    <span class="page-link" th:if="${autorPremiosPage.last}">Últ.</span>
+                </li>
+            </ul>
+        </nav>
+
+        <nav aria-label="Paginación de premiados" class="flex-shrink-0" th:if="${premio.tipo == 'L' and libroPremiosPage != null and libroPremiosPage.totalPages > 1}">
+            <ul class="pagination mb-0" style="font-size: 0.85rem;">
+                <li class="page-item" th:classappend="${libroPremiosPage.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/premios/view/{id}(id=${premio.id}, page=0)}" tabindex="-1">Prim.</a>
+                </li>
+                <li class="page-item" th:classappend="${libroPremiosPage.first} ? ' disabled'">
+                    <a class="page-link" th:if="${!libroPremiosPage.first}" th:href="@{/premios/view/{id}(id=${premio.id}, page=${currentPage - 1})}">Ant.</a>
+                    <span class="page-link" th:if="${libroPremiosPage.first}">Ant.</span>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(currentPage, currentPage + 4 < libroPremiosPage.totalPages ? currentPage + 4 : libroPremiosPage.totalPages - 1)}" th:classappend="${i == currentPage} ? ' active'">
+                    <a class="page-link" th:href="@{/premios/view/{id}(id=${premio.id}, page=${i})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${libroPremiosPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!libroPremiosPage.last}" th:href="@{/premios/view/{id}(id=${premio.id}, page=${currentPage + 1})}">Sig.</a>
+                    <span class="page-link" th:if="${libroPremiosPage.last}">Sig.</span>
+                </li>
+                <li class="page-item" th:classappend="${libroPremiosPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!libroPremiosPage.last}" th:href="@{/premios/view/{id}(id=${premio.id}, page=${libroPremiosPage.totalPages - 1})}">Últ.</a>
+                    <span class="page-link" th:if="${libroPremiosPage.last}">Últ.</span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="table-responsive" th:if="${premio.tipo == 'A'}">
+        <h5 class="mb-3">Autores premiados</h5>
+        <table class="table table-hover table-bordered align-middle">
+            <thead>
+            <tr>
+                <th style="width:72px;">Foto</th>
+                <th style="width:300px;">Autor</th>
+                <th style="width:200px;">País</th>
+                <th style="width:120px;">Año premio</th>
+                <th style="width:120px;">Nac.</th>
+                <th style="width:120px;">Def.</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ap : ${autorPremiosPage != null ? autorPremiosPage.content : {}}">
+                <td class="text-center">
+                    <img th:if="${ap.autor.foto != null and !#strings.isEmpty(ap.autor.foto)}"
+                         th:src="@{/img/autores/{foto}(foto=${ap.autor.foto})}"
+                         th:alt="${ap.autor.nomAutor}"
+                         style="width:56px;height:56px;object-fit:cover;" class="rounded" />
+                    <span th:if="${ap.autor.foto == null or #strings.isEmpty(ap.autor.foto)}" class="text-muted">---</span>
+                </td>
+                <td>
+                    <strong th:text="${ap.autor.nomAutor + ' ' + (ap.autor.apellido1 != null ? ap.autor.apellido1 : '') + ' ' + (ap.autor.apellido2 != null ? ap.autor.apellido2 : '')}"></strong>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <img th:if="${ap.autor.pais != null and ap.autor.pais.bandera != null and !#strings.isEmpty(ap.autor.pais.bandera)}"
+                             th:src="@{/img/paises/{bandera}(bandera=${ap.autor.pais.bandera})}"
+                             alt=""
+                             aria-hidden="true"
+                             style="width:24px;height:18px;object-fit:cover;" class="rounded border" />
+                        <span th:text="${ap.autor.pais != null ? ap.autor.pais.nomPais : 'N/A'}"></span>
+                    </div>
+                </td>
+                <td th:text="${ap.anio != null ? ap.anio : 'N/A'}"></td>
+                <td th:text="${ap.autor.fechaNacimiento != null ? #dates.format(ap.autor.fechaNacimiento, 'dd/MM/yyyy') : 'N/A'}"></td>
+                <td th:text="${ap.autor.fechaDefuncion != null ? #dates.format(ap.autor.fechaDefuncion, 'dd/MM/yyyy') : 'N/A'}"></td>
+            </tr>
+            <tr th:if="${autorPremiosPage == null or autorPremiosPage.content.isEmpty()}">
+                <td colspan="6" class="text-center text-muted">No hay autores premiados para este premio.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive" th:if="${premio.tipo == 'L'}">
+        <h5 class="mb-3">Libros premiados</h5>
+        <table class="table table-hover table-bordered align-middle">
+            <thead>
+            <tr>
+                <th style="width:72px;">Portada</th>
+                <th style="width:320px;">Título</th>
+                <th style="width:110px;">Año</th>
+                <th style="width:240px;">Serie / Nº</th>
+                <th style="width:320px;">Autores</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="lp : ${libroPremiosPage != null ? libroPremiosPage.content : {}}">
+                <td class="text-center">
+                    <img th:if="${lp.libro.portada != null and !#strings.isEmpty(lp.libro.portada)}"
+                         th:src="@{/img/libros/{portada}(portada=${lp.libro.portada})}"
+                         th:alt="${lp.libro.nomLibro}"
+                         style="width:56px;height:56px;object-fit:cover;" class="rounded" />
+                    <span th:if="${lp.libro.portada == null or #strings.isEmpty(lp.libro.portada)}" class="text-muted">---</span>
+                </td>
+                <td><strong th:text="${lp.libro.nomLibro}"></strong></td>
+                <td th:text="${lp.libro.ano != null ? lp.libro.ano : 'N/A'}"></td>
+                <td>
+                    <span th:text="${lp.libro.serie != null ? lp.libro.serie.denominacion : 'Sin serie'}"></span>
+                    <span th:if="${lp.libro.indiceSerie != null}"> (#<span th:text="${lp.libro.indiceSerie}"></span>)</span>
+                </td>
+                <td style="font-size:0.8rem;line-height:1.25;">
+                    <ul class="list-unstyled mb-0">
+                        <li th:if="${lp.libro.autorLibros == null or lp.libro.autorLibros.isEmpty()}" class="text-muted">Sin autores</li>
+                        <li th:each="al : ${lp.libro.autorLibros}"
+                            th:text="${al.autor.nomAutor + ' ' + (al.autor.apellido1 != null ? al.autor.apellido1 : '') + ' ' + (al.autor.apellido2 != null ? al.autor.apellido2 : '')}"></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr th:if="${libroPremiosPage == null or libroPremiosPage.content.isEmpty()}">
+                <td colspan="5" class="text-center text-muted">No hay libros premiados para este premio.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

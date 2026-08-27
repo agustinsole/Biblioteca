@@ -70,6 +70,7 @@ public class AutorController {
     public String list(Model model,
                        @RequestParam(defaultValue = "0") int page,
                        @RequestParam(required = false) String query,
+                       @RequestParam(required = false) String premioQuery,
                        @RequestParam(defaultValue = "id") String sortField,
                        @RequestParam(defaultValue = "asc") String sortDir) {
         Page<Autor> autoresPage;
@@ -82,14 +83,21 @@ public class AutorController {
             sort = Sort.by(direction, sortField);
         }
         PageRequest pr = PageRequest.of(page, 10, sort);
-        if (query == null || query.trim().isEmpty()) {
+        boolean hasNombre = query != null && !query.trim().isEmpty();
+        boolean hasPremio = premioQuery != null && !premioQuery.trim().isEmpty();
+        if (!hasNombre && !hasPremio) {
             autoresPage = repo.findAll(pr);
         } else {
-            autoresPage = repo.busqueda(query.trim(), pr);
+            autoresPage = repo.busqueda(
+                    hasNombre ? query.trim() : null,
+                    hasPremio ? premioQuery.trim() : null,
+                    pr
+            );
         }
         model.addAttribute("autoresPage", autoresPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("query", query);
+        model.addAttribute("premioQuery", premioQuery);
         model.addAttribute("sortField", sortField);
         model.addAttribute("sortDir", sortDir);
         return "autores/list";

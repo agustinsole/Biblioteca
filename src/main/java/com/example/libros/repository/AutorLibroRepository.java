@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface AutorLibroRepository extends JpaRepository<AutorLibro, Integer> {
     Optional<AutorLibro> findTopByOrderByIdDesc();
+
+    void deleteByLibro_Id(Integer libroId);
 }

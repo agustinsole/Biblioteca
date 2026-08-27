@@ -6,12 +6,44 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1 th:text="${pais.id} != null ? 'Editar País' : 'Crear País'"></h1>
-<form th:action="@{/paises}" th:object="${pais}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <div><label>Nombre</label><input type="text" th:field="*{nomPais}" /></div>
-    <div><label>Bandera</label><input type="text" th:field="*{bandera}" /></div>
-    <div><button type="submit">Guardar</button><a th:href="@{/paises}">Cancelar</a></div>
-</form>
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/paises}" th:object="${pais}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div th:if="${errorMessage != null or #fields.hasErrors()}" class="alert alert-danger">
+                    <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+                    <ul th:if="${#fields.hasErrors()}" class="mb-0">
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <div class="row g-2 align-items-end">
+                    <div class="col-auto" style="min-width: 240px; max-width: 320px;">
+                        <label class="form-label small fw-bold text-dark">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{nomPais}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 220px; max-width: 320px;">
+                        <label class="form-label small fw-bold text-dark">Bandera</label>
+                        <select class="form-select form-select-sm" th:field="*{bandera}">
+                            <option value="">-- Selecciona archivo --</option>
+                            <option th:each="bandera : ${banderas}" th:value="${bandera}" th:text="${bandera}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex align-items-center gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/paises}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+
+            <div class="mt-4" th:if="${pais.bandera != null and !#strings.isEmpty(pais.bandera)}">
+                <h5 class="mb-2">Vista previa de la bandera</h5>
+                <img th:src="@{/img/paises/{file}(file=${pais.bandera})}" alt="Bandera país" class="img-thumbnail" style="max-height: 140px;" />
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

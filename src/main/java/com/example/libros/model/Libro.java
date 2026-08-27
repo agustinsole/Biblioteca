@@ -24,7 +24,6 @@ public class Libro {
     @Column(name = "portada")
     private String portada;
 
-    @NotBlank
     @Column(name = "nom_archivo")
     private String nomArchivo;
 

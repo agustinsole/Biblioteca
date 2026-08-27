@@ -3,350 +3,358 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Biblioteca - Sistema de Gestión</title>
+    <title>Biblioteca - Dashboard</title>
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #f4f7fe;
+            --sidebar-bg: #ffffff;
+            --panel-bg: #ffffff;
+            --border: #e8edf7;
+            --text: #1d2b4f;
+            --muted: #6e7da5;
+            --accent: #2ab7a9;
+            --accent-soft: #ebfbf8;
+            --success: #2ab7a9;
+            --shadow: 0 12px 24px rgba(46, 64, 123, 0.08);
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a3a2a 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: "Poppins", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 8% 10%, #dbe4ff 0%, rgba(219, 228, 255, 0) 38%),
+                radial-gradient(circle at 92% 85%, #d5f2ef 0%, rgba(213, 242, 239, 0) 36%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .layout {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 18px;
+            padding: 14px;
+        }
+
+        .sidebar {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .brand {
+            padding: 8px 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #213068;
+        }
+
+        .brand p {
+            margin: 4px 0 0;
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .menu {
+            display: grid;
+            gap: 8px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: var(--text);
+            background: #f9fbff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 0.93rem;
+            font-weight: 500;
+            transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .menu a:hover {
+            transform: translateX(3px);
+            border-color: #c9d5ff;
+            background: var(--accent-soft);
+        }
+
+        .main {
+            min-width: 0;
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 14px;
+            height: 100%;
+        }
+
+        .topbar {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 16px 22px;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .topbar p {
+            margin: 3px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .stat-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
+            background: var(--accent-soft);
+            color: var(--accent);
+            flex-shrink: 0;
         }
 
-        /* Fondo temático de biblioteca */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(139, 69, 19, 0.1) 40px, rgba(139, 69, 19, 0.1) 80px),
-                repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(139, 69, 19, 0.05) 60px, rgba(139, 69, 19, 0.05) 120px);
-            pointer-events: none;
-            z-index: 0;
+        .stat-icon svg {
+            width: 22px;
+            height: 22px;
+            display: block;
         }
 
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(184, 134, 11, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+        .stat-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-start;
+            gap: 8px;
         }
 
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            text-align: center;
-            color: #fff;
-            margin-bottom: 50px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .header p {
-            font-size: 1.3rem;
-            opacity: 0.95;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .section {
-            margin-bottom: 50px;
-        }
-
-        .section-title {
-            color: #ffd700;
-            font-size: 2rem;
-            margin-bottom: 25px;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        .stat-label {
+            font-size: 1.12rem;
+            text-transform: lowercase;
+            letter-spacing: 0;
+            color: var(--muted);
             font-weight: 600;
-            letter-spacing: 1px;
         }
 
-        .principal-section {
+        .stat-value {
+            margin-top: 0;
+            font-size: 2.35rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .gallery-row {
+            min-height: 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
         }
 
-        .menu-grid {
+        .gallery-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 14px;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-title {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2a3a73;
+        }
+
+        .gallery-grid {
+            min-height: 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            height: 100%;
         }
 
-        .menu-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.95) 100%);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            text-decoration: none;
-            color: #333;
-            border: 2px solid transparent;
-            position: relative;
+        .gallery-grid.books {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            grid-template-rows: repeat(3, minmax(0, 1fr));
+        }
+
+        .thumb {
+            background: #eef3ff;
+            border: 1px solid #dfe7fd;
+            border-radius: 12px;
             overflow: hidden;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .menu-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(184, 134, 11, 0.1) 0%, transparent 100%);
-            pointer-events: none;
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .menu-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 50px rgba(184, 134, 11, 0.4);
-            border-color: #b8860b;
-        }
-
-        .menu-card-principal {
-            grid-column: span 1;
-            background: linear-gradient(135deg, #fff8dc 0%, #fffacd 100%);
-            border: 3px solid #b8860b;
-            padding: 40px;
-        }
-
-        .menu-card-principal:hover {
-            box-shadow: 0 20px 60px rgba(184, 134, 11, 0.6);
-            transform: translateY(-10px) scale(1.05);
-        }
-
-        .menu-card-icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-        }
-
-        .menu-card-principal .menu-card-icon {
-            font-size: 4rem;
-        }
-
-        .menu-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: #2d5a3d;
-            font-weight: 600;
-        }
-
-        .menu-card-principal h2 {
-            font-size: 2rem;
-            color: #8b4513;
-        }
-
-        .menu-card p {
-            font-size: 0.95rem;
-            color: #555;
-            margin-bottom: 15px;
-            min-height: 40px;
-        }
-
-        .menu-card-principal p {
-            font-size: 1.05rem;
-            color: #333;
-        }
-
-        .menu-card-link {
-            display: inline-block;
-            background: linear-gradient(135deg, #2d5a3d 0%, #1a472a 100%);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .menu-card-link:hover {
-            background: linear-gradient(135deg, #1a472a 0%, #0f2f1a 100%);
-            transform: translateX(5px);
-            border-color: #b8860b;
-        }
-
-        .menu-card-principal .menu-card-link {
-            background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
-            padding: 15px 30px;
-            font-size: 1.05rem;
-        }
-
-        .menu-card-principal .menu-card-link:hover {
-            background: linear-gradient(135deg, #654321 0%, #4a2f1a 100%);
-        }
-
-        .footer {
-            text-align: center;
-            color: #d4af37;
-            opacity: 0.8;
-            margin-top: 60px;
+        .empty {
+            color: var(--muted);
             font-size: 0.9rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            margin: 8px 0 0;
         }
 
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.2rem;
-            }
+        .thumb.book img {
+            object-fit: cover;
+            background: #fff;
+            padding: 0;
+        }
 
-            .section-title {
-                font-size: 1.5rem;
-            }
+        .thumb.book {
+            aspect-ratio: auto;
+            height: 100%;
+        }
 
-            .menu-grid {
+        @media (max-width: 1100px) {
+            body { overflow: auto; }
+            .layout {
+                height: auto;
+                min-height: 100vh;
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
-
-            .principal-section {
-                grid-template-columns: 1fr;
-            }
-
-            .menu-card {
-                padding: 20px;
-            }
-
-            .menu-card-icon {
-                font-size: 2.5rem;
-            }
-
-            .menu-card-principal .menu-card-icon {
-                font-size: 3rem;
-            }
-
-            .menu-card h2 {
-                font-size: 1.3rem;
-            }
-
-            .menu-card-principal h2 {
-                font-size: 1.7rem;
+            .main { grid-template-rows: auto auto auto; }
+            .gallery-row { grid-template-columns: 1fr; }
+            .gallery-grid.books {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-rows: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📚 Biblioteca Digital</h1>
-            <p>Sistema integral de gestión de libros, autores y premios literarios</p>
-        </div>
-
-        <div class="section">
-            <div class="section-title">✨ GESTIÓN PRINCIPAL ✨</div>
-            <div class="principal-section">
-                <a href="/autores" class="menu-card menu-card-principal">
-                    <div class="menu-card-icon">✍️</div>
-                    <h2>Autores</h2>
-                    <p>Gestiona información detallada de autores, su biografía y país de origen.</p>
-                    <span class="menu-card-link">→ Acceder CRUD Autores</span>
-                </a>
-
-                <a href="/libros" class="menu-card menu-card-principal">
-                    <div class="menu-card-icon">📖</div>
-                    <h2>Libros</h2>
-                    <p>Consulta, crea y gestiona el catálogo completo de libros de la biblioteca.</p>
-                    <span class="menu-card-link">→ Acceder CRUD Libros</span>
-                </a>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Biblioteca</h1>
+                <p>Panel principal</p>
             </div>
-        </div>
+            <nav class="menu">
+                <a th:href="@{/autores}">Autores</a>
+                <a th:href="@{/libros}">Libros</a>
+                <a th:href="@{/premios}">Premios</a>
+                <a th:href="@{/series}">Series</a>
+                <a th:href="@{/paises}">Países</a>
+                <a th:href="@{/ia}">IA</a>
+                <a th:href="@{/ia/rag}">RAG PDFs</a>
+                <a th:href="@{/archivos}">Archivos</a>
+            </nav>
+        </aside>
 
-        <div class="section">
-            <div class="section-title">Gestión de Contenido Adicional</div>
-            <div class="menu-grid">
-                <a href="/premios" class="menu-card">
-                    <div class="menu-card-icon">🏆</div>
-                    <h2>Premios</h2>
-                    <p>Registra premios literarios y sus asociaciones con libros y autores.</p>
-                    <span class="menu-card-link">Ver más →</span>
-                </a>
+        <main class="main">
+            <section class="topbar">
+                <h2>Main Dashboard</h2>
+                <p>Resumen rápido y galerías visuales del catálogo</p>
+            </section>
 
-                <a href="/paises" class="menu-card">
-                    <div class="menu-card-icon">🌍</div>
-                    <h2>Países</h2>
-                    <p>Administra los países de origen de autores y premios literarios.</p>
-                    <span class="menu-card-link">Ver más →</span>
-                </a>
+            <section class="stats">
+                <article class="stat-card">
+                    <div class="stat-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            <path d="M8 9a5 5 0 0 0-5 5v1h10v-1a5 5 0 0 0-5-5z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${autoresCount}">0</div>
+                        <div class="stat-label">autores</div>
+                    </div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M1 2.828c.885-.37 2.154-.828 4-.828 1.846 0 3.115.458 4 .828v11.344c-.885-.37-2.154-.828-4-.828-1.846 0-3.115.458-4 .828V2.828z"/>
+                            <path d="M9 2.828c.885-.37 2.154-.828 4-.828 1.846 0 3.115.458 4 .828v11.344c-.885-.37-2.154-.828-4-.828-1.846 0-3.115.458-4 .828V2.828z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${librosCount}">0</div>
+                        <div class="stat-label">libros</div>
+                    </div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.1.8A1 1 0 0 1 4 .3h8a1 1 0 0 1 .8 1.6L10.3 5h1.4A3.3 3.3 0 0 1 8.7 8.2V9H11a1 1 0 0 1 0 2H5a1 1 0 1 1 0-2h2.3v-.8A3.3 3.3 0 0 1 4.3 5h1.4L3.1 1.9A1 1 0 0 1 3.1.8z"/>
+                            <path d="M6 12h4v2H6z"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" th:text="${premiosCount}">0</div>
+                        <div class="stat-label">premios</div>
+                    </div>
+                </article>
+            </section>
 
-                <a href="/series" class="menu-card">
-                    <div class="menu-card-icon">📚</div>
-                    <h2>Series</h2>
-                    <p>Organiza y clasifica libros en series y colecciones.</p>
-                    <span class="menu-card-link">Ver más →</span>
-                </a>
-            </div>
-        </div>
+            <section class="gallery-row">
+                <article class="gallery-card">
+                    <h3 class="gallery-title">Galería de autores</h3>
+                    <div class="gallery-grid" th:if="${!autorFotos.isEmpty()}">
+                        <div class="thumb" th:each="foto : ${autorFotos}">
+                            <img th:src="@{/img/autores/{foto}(foto=${foto})}" alt="Autor" />
+                        </div>
+                    </div>
+                    <p class="empty" th:if="${autorFotos.isEmpty()}">No hay imágenes de autores disponibles.</p>
+                </article>
 
-        <div class="section">
-            <div class="section-title">Relaciones y Asociaciones</div>
-            <div class="menu-grid">
-                <a href="/autor-libro" class="menu-card">
-                    <div class="menu-card-icon">🔗</div>
-                    <h2>Autor-Libro</h2>
-                    <p>Establece y gestiona las relaciones entre autores y libros.</p>
-                    <span class="menu-card-link">Ver más →</span>
-                </a>
-
-                <a href="/autor-premio" class="menu-card">
-                    <div class="menu-card-icon">⭐</div>
-                    <h2>Autor-Premio</h2>
-                    <p>Registra los premios otorgados a autores a lo largo del tiempo.</p>
-                    <span class="menu-card-link">Ver más →</span>
-                </a>
-
-                <a href="/libro-premios" class="menu-card">
-                    <div class="menu-card-icon">🎖️</div>
-                    <h2>Libro-Premios</h2>
-                    <p>Vincula libros con los premios que han ganado.</p>
-                    <span class="menu-card-link">Ver más →</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>© 2026 Sistema de Gestión de Biblioteca. Todos los derechos reservados.</p>
-        </div>
+                <article class="gallery-card">
+                    <h3 class="gallery-title">Galería de portadas</h3>
+                    <div class="gallery-grid books" th:if="${!libroPortadas.isEmpty()}">
+                        <div class="thumb book" th:each="portada : ${libroPortadas}">
+                            <img th:src="@{/img/libros/{portada}(portada=${portada})}" alt="Portada" />
+                        </div>
+                    </div>
+                    <p class="empty" th:if="${libroPortadas.isEmpty()}">No hay portadas de libros disponibles.</p>
+                </article>
+            </section>
+        </main>
     </div>
 </body>
 </html>

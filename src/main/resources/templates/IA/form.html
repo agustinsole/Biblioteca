@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Asistente IA</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Consulta de IA</h1>
+        <a th:href="@{/}" class="btn btn-outline-secondary">Inicio</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form th:action="@{/ia/preguntar}" method="post" class="row g-3">
+                <div class="col-12">
+                    <label for="pregunta" class="form-label fw-semibold">Pregunta en lenguaje natural</label>
+                    <input
+                            id="pregunta"
+                            name="pregunta"
+                            type="text"
+                            class="form-control form-control-lg"
+                            placeholder="Ejemplo: Que autores espanoles nacieron antes de 1900?"
+                            th:value="${pregunta}" />
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Preguntar</button>
+                    <a th:href="@{/ia}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+
+            <div th:if="${error != null}" class="alert alert-danger mt-4 mb-0" role="alert" th:text="${error}"></div>
+
+            <div th:if="${respuesta != null}" class="mt-4">
+                <h2 class="h6 text-uppercase text-muted">Respuesta</h2>
+                <p class="p-3 rounded border bg-white mb-0 lh-lg" th:text="${respuesta}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

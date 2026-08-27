@@ -4,9 +4,176 @@
     <meta charset="UTF-8" />
     <title>Ver Serie</title>
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+    <style>
+        :root {
+            --page-bg: #f4efe7;
+            --panel-bg: #fffaf3;
+            --panel-border: #e2d6c4;
+            --text-main: #2b241d;
+            --text-muted: #6f6255;
+            --accent: #8b5e34;
+            --accent-soft: #f4e4cf;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #fff8ef 0%, var(--page-bg) 55%, #ebe1d4 100%);
+            color: var(--text-main);
+        }
+
+        .series-shell {
+            max-width: 1280px;
+        }
+
+        .hero-card,
+        .book-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 14px 40px rgba(65, 45, 25, 0.08);
+        }
+
+        .hero-card {
+            border-radius: 1.25rem;
+        }
+
+        .book-card {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .book-cover {
+            width: 100%;
+            max-width: 180px;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+            border-radius: 0.85rem;
+            border: 1px solid rgba(139, 94, 52, 0.22);
+            background: linear-gradient(145deg, #fdf6ec, #efe1cf);
+        }
+
+        .section-title {
+            color: var(--accent);
+            letter-spacing: 0.02em;
+        }
+
+        .muted-label {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .award-chip {
+            background: #fff;
+            border: 1px solid rgba(139, 94, 52, 0.18);
+            border-radius: 999px;
+            padding: 0.35rem 0.65rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.25rem 0.35rem 0 0;
+        }
+
+        .award-logo {
+            width: 1.5rem;
+            height: 1.5rem;
+            object-fit: contain;
+        }
+
+        .author-badge {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(139, 94, 52, 0.15);
+            border-radius: 999px;
+            padding: 0.35rem 0.7rem;
+            display: inline-block;
+            margin: 0.25rem 0.35rem 0 0;
+            font-weight: 600;
+        }
+
+        .top-action {
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
-<h1 th:text="${serie.denominacion}"></h1>
-<a th:href="@{/series}">Volver</a>
+<div class="container py-4 series-shell">
+    <div class="hero-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+            <div>
+                <div class="muted-label mb-2">Serie</div>
+                <h1 class="mb-0 display-6 fw-semibold" th:text="${serie.denominacion}"></h1>
+            </div>
+            <a th:href="@{/series}" class="btn btn-outline-secondary top-action">
+                Volver
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${librosOrdenados == null or #lists.isEmpty(librosOrdenados)}" class="alert alert-light border shadow-sm">
+        Esta serie todavía no tiene libros asociados.
+    </div>
+
+    <div class="row g-4" th:if="${librosOrdenados != null and !#lists.isEmpty(librosOrdenados)}">
+        <div class="col-12" th:each="libro : ${librosOrdenados}">
+            <div class="book-card p-4">
+                <div class="row g-4 align-items-start">
+                    <div class="col-12 col-md-auto">
+                        <img class="book-cover"
+                             th:if="${libro.portada != null and !#strings.isEmpty(libro.portada)}"
+                             th:src="@{/img/libros/{file}(file=${libro.portada})}"
+                             th:alt="${libro.nomLibro}" />
+                        <div class="book-cover d-flex align-items-center justify-content-center text-center px-3"
+                             th:if="${libro.portada == null or #strings.isEmpty(libro.portada)}">
+                            <span class="text-muted fw-semibold">Sin portada disponible</span>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                            <div>
+                                <div class="muted-label mb-2">Libro</div>
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <h2 class="h3 mb-1" th:text="${libro.nomLibro}"></h2>
+                                    <span class="badge rounded-pill text-bg-dark px-3 py-2" th:if="${libro.indiceSerie != null}" th:text="${'#' + libro.indiceSerie}"></span>
+                                </div>
+                                <div class="text-muted" th:text="${libro.ano != null ? libro.ano : 'Año no disponible'}"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="muted-label mb-2">Autor/es</div>
+                            <div th:if="${libro.autorLibros != null and !#lists.isEmpty(libro.autorLibros)}">
+                                <span class="author-badge"
+                                      th:each="autorLibro : ${libro.autorLibros}"
+                                      th:text="${autorLibro.autor != null ? autorLibro.autor.nomAutor + ' ' + autorLibro.autor.apellido1 + ' ' + autorLibro.autor.apellido2 : 'Autor sin nombre'}"></span>
+                            </div>
+                            <div class="text-muted" th:if="${libro.autorLibros == null or #lists.isEmpty(libro.autorLibros)}">
+                                Este libro no tiene autores asociados.
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="muted-label mb-2">Premios obtenidos</div>
+                            <div th:if="${libro.libroPremios != null and !#lists.isEmpty(libro.libroPremios)}">
+                                <div class="award-chip"
+                                     th:each="libroPremio : ${libro.libroPremios}">
+                                    <img class="award-logo"
+                                         th:if="${libroPremio.premio != null and libroPremio.premio.logotipo != null and !#strings.isEmpty(libroPremio.premio.logotipo)}"
+                                         th:src="@{/img/premios/{file}(file=${libroPremio.premio.logotipo})}"
+                                         th:alt="${libroPremio.premio != null ? libroPremio.premio.nomPremio : 'Premio'}" />
+                                    <span class="fw-semibold"
+                                          th:text="${libroPremio.premio != null ? libroPremio.premio.nomPremio : 'Premio sin nombre'}"></span>
+                                </div>
+                            </div>
+                            <div class="text-muted" th:if="${libro.libroPremios == null or #lists.isEmpty(libro.libroPremios)}">
+                                Este libro no tiene premios registrados.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -6,19 +6,59 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1 th:text="${premio.id} != null ? 'Editar Premio' : 'Crear Premio'"></h1>
-<form th:action="@{/premios}" th:object="${premio}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <div><label>Nombre</label><textarea th:field="*{nomPremio}" rows="3"></textarea></div>
-    <div>
-        <label>País</label>
-        <select th:field="*{pais.id}">
-            <option value="">-- Selecciona --</option>
-            <option th:each="pais : ${paises}" th:value="${pais.id}" th:text="${pais.nomPais}"></option>
-        </select>
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/premios}" th:object="${premio}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div th:if="${errorMessage != null or #fields.hasErrors()}" class="alert alert-danger">
+                    <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+                    <ul th:if="${#fields.hasErrors()}" class="mb-0">
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <div class="row g-2 align-items-end">
+                    <div class="col-auto" style="min-width: 260px; max-width: 360px;">
+                        <label class="form-label small fw-bold text-dark">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{nomPremio}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 200px; max-width: 260px;">
+                        <label class="form-label small fw-bold text-dark">País</label>
+                        <select class="form-select form-select-sm" th:field="*{pais.id}">
+                            <option value="">-- Selecciona --</option>
+                            <option th:each="pais : ${paises}" th:value="${pais.id}" th:text="${pais.nomPais}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 120px; max-width: 140px;">
+                        <label class="form-label small fw-bold text-dark">Tipo</label>
+                        <select class="form-select form-select-sm" th:field="*{tipo}">
+                            <option value="">-- Selecciona --</option>
+                            <option value="A">A</option>
+                            <option value="L">L</option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 220px; max-width: 300px;">
+                        <label class="form-label small fw-bold text-dark">Logotipo</label>
+                        <select class="form-select form-select-sm" th:field="*{logotipo}">
+                            <option value="">-- Selecciona logotipo --</option>
+                            <option th:each="logo : ${logotipos}" th:value="${logo}" th:text="${logo}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex align-items-center gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/premios}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+
+            <div class="mt-4" th:if="${premio.logotipo != null and !#strings.isEmpty(premio.logotipo)}">
+                <h5 class="mb-2">Vista previa del logotipo</h5>
+                <img th:src="@{/img/premios/{file}(file=${premio.logotipo})}" alt="Logotipo premio" class="img-thumbnail" style="max-height: 140px;" />
+            </div>
+        </div>
     </div>
-    <div><label>Tipo</label><input type="text" th:field="*{tipo}" /></div>
-    <div><button type="submit">Guardar</button><a th:href="@{/premios}">Cancelar</a></div>
-</form>
+</div>
 </body>
 </html>

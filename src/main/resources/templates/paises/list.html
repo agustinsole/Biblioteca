@@ -6,45 +6,87 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1>Países</h1>
-<a th:href="@{/paises/new}">Crear país</a>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Bandera</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="pais : ${paises}">
-        <td th:text="${pais.id}"></td>
-        <td th:text="${pais.nomPais}"></td>
-        <td th:text="${pais.bandera}"></td>
-        <td class="text-center">
-            <a th:href="@{'/paises/view/' + ${pais.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
-                    <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="#fff"/>
-                </svg>
-            </a>
-            <a th:href="@{'/paises/edit/' + ${pais.id}}" class="btn btn-outline-secondary btn-sm p-1 me-1" title="Editar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L4.207 14.793 1 15l.207-3.207L12.146.854z"/>
-                </svg>
-            </a>
-            <form th:action="@{'/paises/delete/' + ${pais.id}}" method="post" style="display:inline">
-                <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Borrar" onclick="return confirm('Confirma borrado?');">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
-                        <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
-                    </svg>
-                </button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div class="container-fluid mt-4">
+    <div class="d-flex flex-nowrap align-items-center gap-2 mb-3">
+        <nav aria-label="Paginación de países" th:if="${paisesPage.totalPages > 1}" class="flex-shrink-0">
+            <ul class="pagination mb-0" style="font-size: 0.85rem;">
+                <li class="page-item" th:classappend="${paisesPage.first} ? ' disabled'">
+                    <a class="page-link" th:href="@{/paises(page=0)}" tabindex="-1">Prim.</a>
+                </li>
+                <li class="page-item" th:classappend="${paisesPage.first} ? ' disabled'">
+                    <a class="page-link" th:if="${!paisesPage.first}" th:href="@{/paises(page=${currentPage - 1})}">Ant.</a>
+                    <span class="page-link" th:if="${paisesPage.first}">Ant.</span>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(currentPage, currentPage + 4 < paisesPage.totalPages ? currentPage + 4 : paisesPage.totalPages - 1)}" th:classappend="${i == currentPage} ? ' active'">
+                    <a class="page-link" th:href="@{/paises(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${paisesPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!paisesPage.last}" th:href="@{/paises(page=${currentPage + 1})}">Sig.</a>
+                    <span class="page-link" th:if="${paisesPage.last}">Sig.</span>
+                </li>
+                <li class="page-item" th:classappend="${paisesPage.last} ? ' disabled'">
+                    <a class="page-link" th:if="${!paisesPage.last}" th:href="@{/paises(page=${paisesPage.totalPages - 1})}">Últ.</a>
+                    <span class="page-link" th:if="${paisesPage.last}">Últ.</span>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex-grow-1"></div>
+        <a th:href="@{/}" class="btn btn-outline-secondary flex-shrink-0">Inicio</a>
+        <a th:href="@{/paises/new}" class="btn btn-success flex-shrink-0">Crear país</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead>
+            <tr>
+                <th style="width:72px;">Bandera</th>
+                <th style="width:320px;">Nombre</th>
+                <th style="width:220px;">Archivo bandera</th>
+                <th style="width:140px;" class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="pais : ${paisesPage.content}">
+                <td class="text-center">
+                    <img th:if="${pais.bandera != null and !#strings.isEmpty(pais.bandera)}"
+                         th:src="@{/img/paises/{bandera}(bandera=${pais.bandera})}"
+                         alt=""
+                         aria-hidden="true"
+                         style="width:44px;height:30px;object-fit:cover;" class="rounded border" />
+                    <span th:if="${pais.bandera == null or #strings.isEmpty(pais.bandera)}" class="text-muted">---</span>
+                </td>
+                <td>
+                    <strong th:text="${pais.nomPais}"></strong>
+                </td>
+                <td th:text="${pais.bandera != null and !#strings.isEmpty(pais.bandera) ? pais.bandera : 'N/A'}"></td>
+                <td class="text-center">
+                    <a th:href="@{'/paises/view/' + ${pais.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z" fill="#fff"/>
+                        </svg>
+                    </a>
+                    <a th:href="@{'/paises/edit/' + ${pais.id}}" class="btn btn-outline-secondary btn-sm p-1 me-1" title="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L4.207 14.793 1 15l.207-3.207L12.146.854z"/>
+                        </svg>
+                    </a>
+                    <form th:action="@{'/paises/delete/' + ${pais.id}}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Borrar" onclick="return confirm('Confirma borrado?');">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${paisesPage.content.isEmpty()}">
+                <td colspan="4" class="text-center text-muted">Sin países registrados</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

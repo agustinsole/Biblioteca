@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAG sobre PDF</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Consulta RAG sobre PDFs</h1>
+        <div class="d-flex gap-2">
+            <a th:href="@{/ia}" class="btn btn-outline-primary">IA General</a>
+            <a th:href="@{/}" class="btn btn-outline-secondary">Inicio</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form th:action="@{/ia/rag/preguntar}" method="post" class="row g-3">
+                <div class="col-12 col-lg-6">
+                    <label for="autorId" class="form-label fw-semibold">Autor</label>
+                    <select id="autorId" class="form-select form-select-lg">
+                        <option value="">Selecciona un autor...</option>
+                        <option th:each="autor : ${autoresRag}"
+                                th:value="${autor.id}"
+                                th:text="${autor.label}"
+                                th:selected="${autor.id == autorSeleccionado}"></option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label for="pdfFile" class="form-label fw-semibold">Libro del autor</label>
+                    <select id="pdfFile" name="pdfFile" class="form-select form-select-lg">
+                        <option value="">Selecciona un libro...</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label for="pregunta" class="form-label fw-semibold">Pregunta sobre el contenido del PDF</label>
+                    <input id="pregunta"
+                           name="pregunta"
+                           type="text"
+                           class="form-control form-control-lg"
+                           placeholder="Ejemplo: Cual es la idea principal del capitulo 1?"
+                           th:value="${preguntaRag}" />
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Preguntar al PDF</button>
+                    <a th:href="@{/ia/rag}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+
+            <div th:if="${error != null}" class="alert alert-danger mt-4 mb-0" role="alert" th:text="${error}"></div>
+
+            <div th:if="${respuesta != null}" class="mt-4">
+                <h2 class="h6 text-uppercase text-muted">Respuesta</h2>
+                <p class="p-3 rounded border bg-white mb-0 lh-lg" th:text="${respuesta}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:inline="javascript">
+    const autoresRag = /*[[${autoresRag}]]*/ [];
+    const autorSeleccionadoInicial = /*[[${autorSeleccionado}]]*/ "";
+    const pdfSeleccionadoInicial = /*[[${pdfSeleccionado}]]*/ "";
+
+    const autorSelect = document.getElementById("autorId");
+    const libroSelect = document.getElementById("pdfFile");
+
+    function renderLibros(autorId, selectedPdf) {
+        libroSelect.innerHTML = "";
+
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "Selecciona un libro...";
+        libroSelect.appendChild(empty);
+
+        if (!autorId) {
+            return;
+        }
+
+        const autor = autoresRag.find(a => String(a.id) === String(autorId));
+        if (!autor || !Array.isArray(autor.libros)) {
+            return;
+        }
+
+        autor.libros.forEach(libro => {
+            const opt = document.createElement("option");
+            opt.value = libro.pdfFile;
+            opt.textContent = libro.title;
+            if (selectedPdf && String(selectedPdf).toLowerCase() === String(libro.pdfFile).toLowerCase()) {
+                opt.selected = true;
+            }
+            libroSelect.appendChild(opt);
+        });
+    }
+
+    if (autorSelect) {
+        if (autorSeleccionadoInicial) {
+            autorSelect.value = String(autorSeleccionadoInicial);
+        }
+        renderLibros(autorSelect.value, pdfSeleccionadoInicial);
+
+        autorSelect.addEventListener("change", () => {
+            renderLibros(autorSelect.value, "");
+        });
+    }
+</script>
+</body>
+</html>

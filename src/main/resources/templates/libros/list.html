@@ -11,19 +11,19 @@
         <nav aria-label="Paginación de libros" th:if="${librosPage.totalPages > 1}" class="flex-shrink-0">
             <ul class="pagination mb-0" style="font-size: 0.85rem;">
                 <li class="page-item" th:classappend="${librosPage.first} ? ' disabled'">
-                    <a class="page-link" th:href="@{/libros(page=0, query=${query}, sortField=${sortField}, sortDir=${sortDir})}" tabindex="-1">Prim.</a>
+                    <a class="page-link" th:href="@{/libros(page=0, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField=${sortField}, sortDir=${sortDir})}" tabindex="-1">Prim.</a>
                 </li>
                 <li class="page-item" th:classappend="${librosPage.first} ? ' disabled'">
-                    <a class="page-link" th:href="@{/libros(page=${currentPage - 1}, query=${query}, sortField=${sortField}, sortDir=${sortDir})}">Ant.</a>
+                    <a class="page-link" th:href="@{/libros(page=${currentPage - 1}, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField=${sortField}, sortDir=${sortDir})}">Ant.</a>
                 </li>
                 <li class="page-item" th:each="i : ${#numbers.sequence(currentPage, currentPage + 4 < librosPage.totalPages ? currentPage + 4 : librosPage.totalPages - 1)}" th:classappend="${i == currentPage} ? ' active'">
-                    <a class="page-link" th:href="@{/libros(page=${i}, query=${query}, sortField=${sortField}, sortDir=${sortDir})}" th:text="${i + 1}"></a>
+                    <a class="page-link" th:href="@{/libros(page=${i}, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField=${sortField}, sortDir=${sortDir})}" th:text="${i + 1}"></a>
                 </li>
                 <li class="page-item" th:classappend="${librosPage.last} ? ' disabled'">
-                    <a class="page-link" th:href="@{/libros(page=${currentPage + 1}, query=${query}, sortField=${sortField}, sortDir=${sortDir})}">Sig.</a>
+                    <a class="page-link" th:href="@{/libros(page=${currentPage + 1}, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField=${sortField}, sortDir=${sortDir})}">Sig.</a>
                 </li>
                 <li class="page-item" th:classappend="${librosPage.last} ? ' disabled'">
-                    <a class="page-link" th:href="@{/libros(page=${librosPage.totalPages - 1}, query=${query}, sortField=${sortField}, sortDir=${sortDir})}">Últ.</a>
+                    <a class="page-link" th:href="@{/libros(page=${librosPage.totalPages - 1}, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField=${sortField}, sortDir=${sortDir})}">Últ.</a>
                 </li>
             </ul>
         </nav>
@@ -31,10 +31,13 @@
             <form th:action="@{/libros}" method="get" class="d-flex align-items-center gap-2">
                 <input type="hidden" name="sortField" th:value="${sortField}" />
                 <input type="hidden" name="sortDir" th:value="${sortDir}" />
-                <input type="search" name="query" class="form-control" placeholder="Buscar título" th:value="${query}" style="width: 240px;" />
+                <input type="search" name="query" class="form-control" placeholder="Buscar título" th:value="${query}" style="width: 180px;" />
+                <input type="search" name="autorQuery" class="form-control" placeholder="Buscar autor" th:value="${autorQuery}" style="width: 180px;" />
+                <input type="search" name="premioQuery" class="form-control" placeholder="Buscar premio" th:value="${premioQuery}" style="width: 180px;" />
                 <button type="submit" class="btn btn-outline-primary btn-sm">Buscar</button>
             </form>
         </div>
+        <a th:href="@{/}" class="btn btn-outline-secondary flex-shrink-0">Inicio</a>
         <a th:href="@{/libros/new}" class="btn btn-success flex-shrink-0">Crear libro</a>
     </div>
 
@@ -47,8 +50,8 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <span>Título</span>
                         <div class="d-flex flex-column align-items-end ms-2" style="display:inline-block;">
-                            <a th:href="@{/libros(page=0, query=${query}, sortField='nomLibro', sortDir='asc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar asc">▲</a>
-                            <a th:href="@{/libros(page=0, query=${query}, sortField='nomLibro', sortDir='desc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar desc">▼</a>
+                            <a th:href="@{/libros(page=0, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField='nomLibro', sortDir='asc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar asc">▲</a>
+                            <a th:href="@{/libros(page=0, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField='nomLibro', sortDir='desc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar desc">▼</a>
                         </div>
                     </div>
                 </th>
@@ -56,8 +59,8 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <span>Año</span>
                         <div class="d-flex flex-column align-items-end ms-2" style="display:inline-block;">
-                            <a th:href="@{/libros(page=0, query=${query}, sortField='ano', sortDir='asc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar asc">▲</a>
-                            <a th:href="@{/libros(page=0, query=${query}, sortField='ano', sortDir='desc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar desc">▼</a>
+                            <a th:href="@{/libros(page=0, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField='ano', sortDir='asc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar asc">▲</a>
+                            <a th:href="@{/libros(page=0, query=${query}, autorQuery=${autorQuery}, premioQuery=${premioQuery}, sortField='ano', sortDir='desc')}" class="btn btn-link btn-sm p-0" style="font-size:0.7rem;line-height:0.8;" title="Ordenar desc">▼</a>
                         </div>
                     </div>
                 </th>
@@ -65,6 +68,7 @@
                 <th style="width:320px;">Autores</th>
                 <th style="width:260px;">Premios</th>
                 <th style="width:180px;">Archivo</th>
+                <th style="width:180px;">Película</th>
                 <th style="width:140px;" class="text-center">Acciones</th>
             </tr>
             </thead>
@@ -77,7 +81,7 @@
                     <span th:if="${libro.portada == null}">Sin portada</span>
                 </td>
                 <td>
-                    <a th:href="@{'/libros/view/' + ${libro.id}}"><strong th:text="${libro.nomLibro}"></strong></a>
+                    <span th:text="${libro.nomLibro}" style="font-weight:700;font-size:1.1rem;"></span>
                 </td>
                 <td th:text="${libro.ano}"></td>
                 <td style="font-size:0.85rem;line-height:1.25;">
@@ -94,10 +98,44 @@
                 <td style="font-size:0.75rem;line-height:1.25;">
                     <ul class="list-unstyled mb-0">
                         <li th:if="${libro.libroPremios.isEmpty()}" class="text-muted">Sin premios</li>
-                        <li th:each="lp : ${libro.libroPremios}" th:text="${lp.premio.nomPremio}"></li>
+                        <li th:each="lp : ${libro.libroPremios}" class="d-flex align-items-center">
+                            <img th:if="${lp.premio.logotipo != null and !#strings.isEmpty(lp.premio.logotipo)}"
+                                 th:src="@{/img/premios/{logotipo}(logotipo=${lp.premio.logotipo})}"
+                                 th:alt="${lp.premio.nomPremio}"
+                                 style="width:18px;height:18px;object-fit:contain;" class="me-2" />
+                            <span th:text="${lp.premio.nomPremio}"></span>
+                        </li>
                     </ul>
                 </td>
-                <td th:text="${libro.nomArchivo}"></td>
+                <td class="text-center">
+                    <a th:if="${libro.nomArchivo != null and !#strings.isEmpty(#strings.trim(libro.nomArchivo)) and #strings.trim(libro.nomArchivo) != '0'}"
+                          th:href="@{/pdfs/{archivo}(archivo=${#strings.trim(libro.nomArchivo)})}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Abrir PDF" aria-label="Abrir PDF">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 0h5.5L14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+                            <path d="M9.5 0v4a1 1 0 0 0 1 1h4" fill="#fff"/>
+                        </svg>
+                    </a>
+                    <span th:if="${libro.nomArchivo == null or #strings.isEmpty(#strings.trim(libro.nomArchivo)) or #strings.trim(libro.nomArchivo) == '0'}">---</span>
+                </td>
+                <td class="text-center">
+                    <a th:if="${libro.pelicula != null and !#strings.isEmpty(#strings.trim(libro.pelicula)) and #strings.trim(libro.pelicula) != '0'}"
+                          th:href="@{/videos/{archivo}(archivo=${#strings.trim(libro.pelicula)})}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Reproducir vídeo" aria-label="Reproducir vídeo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 18" role="img" aria-hidden="true">
+                            <path d="M2 4.5c0-1.38 1.12-2.5 2.5-2.5h3.2c.54 0 1.06.17 1.49.5l2.08 1.56c.43.33.95.5 1.49.5h6.74C21.43 4.56 23 6.13 23 8.06v5.44c0 1.38-1.12 2.5-2.5 2.5H7.3c-.54 0-1.06-.17-1.49-.5L3.73 13.94a2.5 2.5 0 0 0-1.49-.5H2V4.5z" fill="#1f2937"/>
+                            <path d="M4.4 5.2h1.3v1.3H4.4zm0 2.4h1.3v1.3H4.4zm0 2.4h1.3v1.3H4.4zm0 2.4h1.3v1.3H4.4zm13.9-4.3 3.2 1.9-3.2 1.9z" fill="#f8fafc"/>
+                            <path d="M8.2 6.1h8.8a1 1 0 0 1 1 1v5.8a1 1 0 0 1-1 1H8.2a1 1 0 0 1-1-1V7.1a1 1 0 0 1 1-1z" fill="#374151"/>
+                            <path d="M10.4 7.7 14.8 10l-4.4 2.3z" fill="#fbbf24"/>
+                            <path d="M2.7 3.2h4.6" stroke="#9ca3af" stroke-width="1.2" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <span th:if="${libro.pelicula == null or #strings.isEmpty(#strings.trim(libro.pelicula)) or #strings.trim(libro.pelicula) == '0'}">---</span>
+                </td>
                 <td class="text-center" style="font-size:0.85rem;">
                     <a th:href="@{'/libros/view/' + ${libro.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -121,7 +159,7 @@
                 </td>
             </tr>
             <tr th:if="${librosPage.content.isEmpty()}">
-                <td colspan="8" class="text-center text-muted">Sin libros registrados</td>
+                <td colspan="9" class="text-center text-muted">Sin libros registrados</td>
             </tr>
             </tbody>
         </table>

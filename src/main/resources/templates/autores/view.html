@@ -44,9 +44,13 @@
                             <td class="text-center" th:text="${libro.ano}"></td>
                             <td style="font-size:0.85rem;line-height:1.2;">
                                 <span th:if="${libro.libroPremios.isEmpty()}" class="text-muted">Sin premios</span>
-                                <span th:each="lp, iterStat : ${libro.libroPremios}">
-                                    <span th:text="${lp.premio.nomPremio}"></span><span th:if="${!iterStat.last}">, </span>
-                                </span>
+                                <div th:each="lp : ${libro.libroPremios}" class="d-flex align-items-center mb-1">
+                                    <img th:if="${lp.premio.logotipo != null and !#strings.isEmpty(lp.premio.logotipo)}"
+                                         th:src="@{/img/premios/{logotipo}(logotipo=${lp.premio.logotipo})}"
+                                         th:alt="${lp.premio.nomPremio}"
+                                         style="width:20px;height:20px;object-fit:contain;" class="me-2" />
+                                    <span th:text="${lp.premio.nomPremio}"></span>
+                                </div>
                             </td>
                             <td style="font-size:0.85rem;line-height:1.2;">
                                 <span th:if="${libro.serie == null}">Sin serie</span>
@@ -84,7 +88,13 @@
                 </thead>
                 <tbody>
                     <tr th:each="ap : ${autor.premiosOrdenadosPorAnioAsc}">
-                        <td class="fw-semibold" th:text="${ap.premio.nomPremio}"></td>
+                        <td class="fw-semibold">
+                            <img th:if="${ap.premio.logotipo != null and !#strings.isEmpty(ap.premio.logotipo)}"
+                                 th:src="@{/img/premios/{logotipo}(logotipo=${ap.premio.logotipo})}"
+                                 th:alt="${ap.premio.nomPremio}"
+                                 style="width:28px;height:28px;object-fit:contain;" class="me-2" />
+                            <span th:text="${ap.premio.nomPremio}"></span>
+                        </td>
                         <td class="text-center" th:text="${ap.anio != null ? ap.anio : 'N/D'}"></td>
                     </tr>
                     <tr th:if="${autor.premiosOrdenadosPorAnioAsc.isEmpty()}">
@@ -101,7 +111,10 @@
         <p th:text="${autor.biografia}" style="text-align:justify;line-height:1.6;"></p>
     </div>
     
-    <a th:href="@{/autores}" class="btn btn-secondary">Volver</a>
+    <div class="d-flex gap-2">
+        <a th:href="@{'/autores/edit/' + ${autor.id}}" class="btn btn-primary">Editar autor</a>
+        <a th:href="@{/autores}" class="btn btn-secondary">Volver</a>
+    </div>
 </div>
 </body>
 </html>

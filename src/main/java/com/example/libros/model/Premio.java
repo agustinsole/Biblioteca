@@ -2,6 +2,7 @@ package com.example.libros.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,10 @@ public class Premio {
     @NotBlank
     @Column(name = "tipo")
     private String tipo;
+
+    @Size(max = 30)
+    @Column(name = "logotipo", length = 30)
+    private String logotipo;
 
     @OneToMany(mappedBy = "premio")
     private List<AutorPremio> autorPremios = new ArrayList<>();
@@ -64,6 +69,14 @@ public class Premio {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getLogotipo() {
+        return logotipo;
+    }
+
+    public void setLogotipo(String logotipo) {
+        this.logotipo = logotipo;
     }
 
     public List<AutorPremio> getAutorPremios() {

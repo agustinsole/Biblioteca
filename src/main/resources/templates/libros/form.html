@@ -2,28 +2,257 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Formulario Libro</title>
+    <title>Libro</title>
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1 th:text="${libro.id} != null ? 'Editar Libro' : 'Crear Libro'"></h1>
-<form th:action="@{/libros}" th:object="${libro}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <div><label>Título</label><input type="text" th:field="*{nomLibro}" /></div>
-    <div><label>Año</label><input type="number" th:field="*{ano}" /></div>
-    <div><label>Portada</label><input type="text" th:field="*{portada}" /></div>
-    <div><label>Nombre de archivo</label><input type="text" th:field="*{nomArchivo}" /></div>
-    <div><label>Película</label><input type="text" th:field="*{pelicula}" /></div>
-    <div><label>Comentario</label><textarea th:field="*{comentario}" rows="4"></textarea></div>
-    <div>
-        <label>Serie</label>
-        <select th:field="*{serie.id}">
-            <option value="">-- Selecciona --</option>
-            <option th:each="serie : ${series}" th:value="${serie.id}" th:text="${serie.denominacion}"></option>
-        </select>
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/libros}" th:object="${libro}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div th:if="${errorMessage != null or #fields.hasErrors()}" class="alert alert-danger">
+                    <p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+                    <ul th:if="${#fields.hasErrors()}">
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-auto" style="min-width: 240px; max-width: 280px;">
+                        <label class="form-label small fw-bold text-dark">Título</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{nomLibro}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 100px; max-width: 110px;">
+                        <label class="form-label small fw-bold text-dark">Año</label>
+                        <input type="number" class="form-control form-control-sm" th:field="*{ano}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 160px;">
+                        <label class="form-label small fw-bold text-dark">Serie</label>
+                        <select class="form-select form-select-sm" th:field="*{serie.id}">
+                            <option value="">-- Selecciona --</option>
+                            <option th:each="serie : ${series}" th:value="${serie.id}" th:text="${serie.denominacion}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 110px; max-width: 130px;">
+                        <label class="form-label small fw-bold text-dark">Índice serie</label>
+                        <input type="number" class="form-control form-control-sm" th:field="*{indiceSerie}" />
+                    </div>
+                    <div class="col-auto" style="min-width: 140px; max-width: 160px;">
+                        <label class="form-label small fw-bold text-dark">Portada</label>
+                        <select class="form-select form-select-sm" th:field="*{portada}">
+                            <option value="">-- Selecciona archivo --</option>
+                            <option th:each="portada : ${portadas}" th:value="${portada}" th:text="${portada}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 150px; max-width: 180px;">
+                        <label class="form-label small fw-bold text-dark">Leer</label>
+                        <select class="form-select form-select-sm" th:field="*{nomArchivo}">
+                            <option value="">-- Selecciona PDF --</option>
+                            <option th:each="archivo : ${archivosPdf}" th:value="${archivo}" th:text="${archivo}"></option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="min-width: 150px; max-width: 180px;">
+                        <label class="form-label small fw-bold text-dark">Película</label>
+                        <input type="text" class="form-control form-control-sm" th:field="*{pelicula}" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-dark">Comentario</label>
+                        <textarea class="form-control" th:field="*{comentario}" rows="6"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Autores del libro</h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="addAuthorBtn">Añadir autor</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered" id="authorsTable">
+                            <tbody id="authorsContainer">
+                                <tr th:each="autorItem, iterStat : *{autorLibros}" class="author-row">
+                                    <td>
+                                        <input type="hidden" th:field="*{autorLibros[__${iterStat.index}__].id}" />
+                                        <select class="form-select" th:field="*{autorLibros[__${iterStat.index}__].autor.id}">
+                                            <option value="">-- Selecciona --</option>
+                                            <option th:each="autor : ${autores}" th:value="${autor.id}" th:text="${autor.nomAutor + ' ' + autor.apellido1 + ' ' + autor.apellido2}" th:selected="${autor.id == autorItem.autor.id}"></option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-author-btn" title="Eliminar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Premios del libro</h5>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="addBookAwardBtn">Añadir premio</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered" id="bookAwardsTable">
+                            <tbody id="bookAwardsContainer">
+                                <tr th:each="premioItem, iterStat : *{libroPremios}" class="book-award-row">
+                                    <td>
+                                        <input type="hidden" th:field="*{libroPremios[__${iterStat.index}__].id}" />
+                                        <select class="form-select" th:field="*{libroPremios[__${iterStat.index}__].premio.id}">
+                                            <option value="">-- Selecciona --</option>
+                                            <option th:each="premio : ${premiosLibro}" th:value="${premio.id}" th:text="${premio.nomPremio}" th:selected="${premio.id == premioItem.premio.id}"></option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-book-award-btn" title="Eliminar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex align-items-center gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/libros}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+            <div class="mt-4" th:if="${libro.portada}">
+                <h5 class="mb-2">Vista previa de la portada</h5>
+                <img th:src="@{/img/libros/{file}(file=${libro.portada})}" alt="Portada libro" class="img-thumbnail" style="max-height: 220px;" />
+            </div>
+        </div>
     </div>
-    <div><label>Índice de serie</label><input type="number" th:field="*{indiceSerie}" /></div>
-    <div><button type="submit">Guardar</button><a th:href="@{/libros}">Cancelar</a></div>
-</form>
+</div>
+
+<template id="authorRowTemplate">
+    <tr class="author-row">
+        <td>
+            <input type="hidden" class="author-id-field" name="autorLibros[INDEX].id" />
+            <select class="form-select author-autor-field" name="autorLibros[INDEX].autor.id">
+                <option value="">-- Selecciona --</option>
+                <th:block th:each="autor : ${autores}">
+                    <option th:value="${autor.id}" th:text="${autor.nomAutor + ' ' + autor.apellido1 + ' ' + autor.apellido2}"></option>
+                </th:block>
+            </select>
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-author-btn" title="Eliminar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                    <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                </svg>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<template id="bookAwardRowTemplate">
+    <tr class="book-award-row">
+        <td>
+            <input type="hidden" class="book-award-id-field" name="libroPremios[INDEX].id" />
+            <select class="form-select book-award-premio-field" name="libroPremios[INDEX].premio.id">
+                <option value="">-- Selecciona --</option>
+                <th:block th:each="premio : ${premiosLibro}">
+                    <option th:value="${premio.id}" th:text="${premio.nomPremio}"></option>
+                </th:block>
+            </select>
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm remove-book-award-btn" title="Eliminar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5V6h1v1H4V6h1v-.5z"/>
+                    <path d="M14.5 3a1 1 0 0 1-1 1H12v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4H2.5a1 1 0 0 1-1-1V2h13v1z"/>
+                </svg>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addAuthorBtn = document.getElementById('addAuthorBtn');
+        const authorsContainer = document.getElementById('authorsContainer');
+        const authorRowTemplate = document.getElementById('authorRowTemplate').innerHTML;
+        const addBookAwardBtn = document.getElementById('addBookAwardBtn');
+        const bookAwardsContainer = document.getElementById('bookAwardsContainer');
+        const bookAwardRowTemplate = document.getElementById('bookAwardRowTemplate').innerHTML;
+
+        const updateIndexes = () => {
+            const rows = authorsContainer.querySelectorAll('.author-row');
+            rows.forEach((row, index) => {
+                row.querySelectorAll('input, select').forEach(field => {
+                    if (field.name) {
+                        field.name = field.name.replace(/autorLibros\[\d+\]/, `autorLibros[${index}]`);
+                    }
+                });
+            });
+        };
+
+        const removeAuthor = (button) => {
+            const row = button.closest('.author-row');
+            if (!row) return;
+            const confirmed = window.confirm('¿Confirmas eliminar este autor?');
+            if (!confirmed) return;
+            row.remove();
+            updateIndexes();
+        };
+
+        authorsContainer.addEventListener('click', (event) => {
+            if (event.target.matches('.remove-author-btn')) {
+                removeAuthor(event.target);
+            }
+        });
+
+        addAuthorBtn.addEventListener('click', () => {
+            const newRowHtml = authorRowTemplate.replace(/INDEX/g, authorsContainer.querySelectorAll('.author-row').length);
+            const template = document.createElement('template');
+            template.innerHTML = newRowHtml.trim();
+            authorsContainer.appendChild(template.content.firstChild);
+        });
+
+        const updateBookAwardIndexes = () => {
+            const rows = bookAwardsContainer.querySelectorAll('.book-award-row');
+            rows.forEach((row, index) => {
+                row.querySelectorAll('input, select').forEach(field => {
+                    if (field.name) {
+                        field.name = field.name.replace(/libroPremios\[\d+\]/, `libroPremios[${index}]`);
+                    }
+                });
+            });
+        };
+
+        const removeBookAward = (button) => {
+            const row = button.closest('.book-award-row');
+            if (!row) return;
+            const confirmed = window.confirm('¿Confirmas eliminar este premio?');
+            if (!confirmed) return;
+            row.remove();
+            updateBookAwardIndexes();
+        };
+
+        bookAwardsContainer.addEventListener('click', (event) => {
+            if (event.target.matches('.remove-book-award-btn')) {
+                removeBookAward(event.target);
+            }
+        });
+
+        addBookAwardBtn.addEventListener('click', () => {
+            const newRowHtml = bookAwardRowTemplate.replace(/INDEX/g, bookAwardsContainer.querySelectorAll('.book-award-row').length);
+            const template = document.createElement('template');
+            template.innerHTML = newRowHtml.trim();
+            bookAwardsContainer.appendChild(template.content.firstChild);
+        });
+    });
+</script>
 </body>
 </html>

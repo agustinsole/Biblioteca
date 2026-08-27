@@ -7,18 +7,38 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LibroRepository extends JpaRepository<Libro, Integer> {
     Optional<Libro> findTopByOrderByIdDesc();
 
-    @Query("""
-            select distinct l
-            from Libro l
-            left join l.serie s
-            where lower(l.nomLibro) like lower(concat('%', :query, '%'))
-               or lower(coalesce(s.denominacion, '')) like lower(concat('%', :query, '%'))
-               or lower(coalesce(l.nomArchivo, '')) like lower(concat('%', :query, '%'))
-            """)
-    Page<Libro> busqueda(@Param("query") String query, Pageable pageable);
+    List<Libro> findTop18ByOrderByIdDesc();
+
+    @Query(
+            value = "select distinct l " +
+                    "from Libro l " +
+                    "left join l.autorLibros al " +
+                    "left join al.autor a " +
+                    "left join l.libroPremios lp " +
+                    "left join lp.premio p " +
+                    "where (:titulo is null or :titulo = '' or lower(l.nomLibro) like lower(concat('%', :titulo, '%'))) " +
+                    "and (:autor is null or :autor = '' " +
+                    "or lower(trim(concat(concat(concat(coalesce(a.nomAutor, ''), ' '), concat(coalesce(a.apellido1, ''), ' ')), coalesce(a.apellido2, '')))) like lower(concat('%', :autor, '%'))) " +
+                    "and (:premio is null or :premio = '' or lower(coalesce(p.nomPremio, '')) like lower(concat('%', :premio, '%')))",
+            countQuery = "select count(distinct l.id) " +
+                    "from Libro l " +
+                    "left join l.autorLibros al " +
+                    "left join al.autor a " +
+                    "left join l.libroPremios lp " +
+                    "left join lp.premio p " +
+                    "where (:titulo is null or :titulo = '' or lower(l.nomLibro) like lower(concat('%', :titulo, '%'))) " +
+                    "and (:autor is null or :autor = '' " +
+                    "or lower(trim(concat(concat(concat(coalesce(a.nomAutor, ''), ' '), concat(coalesce(a.apellido1, ''), ' ')), coalesce(a.apellido2, '')))) like lower(concat('%', :autor, '%'))) " +
+                    "and (:premio is null or :premio = '' or lower(coalesce(p.nomPremio, '')) like lower(concat('%', :premio, '%')))"
+    )
+    Page<Libro> busqueda(@Param("titulo") String titulo,
+                    @Param("autor") String autor,
+                    @Param("premio") String premio,
+                    Pageable pageable);
 }

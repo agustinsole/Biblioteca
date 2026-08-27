@@ -11,8 +11,27 @@ import java.util.Optional;
 
 public interface AutorRepository extends JpaRepository<Autor, Integer> {
     Optional<Autor> findTopByOrderByIdDesc();
+        java.util.List<Autor> findAllByOrderByNomAutorAscApellido1AscApellido2Asc();
 
-    @Query(value = "SELECT a FROM Autor a WHERE LOWER(a.nomAutor) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(a.apellido1) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(a.apellido2) LIKE LOWER(CONCAT('%', :query, '%'))",
-           countQuery = "SELECT COUNT(a) FROM Autor a WHERE LOWER(a.nomAutor) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(a.apellido1) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(a.apellido2) LIKE LOWER(CONCAT('%', :query, '%'))")
-    Page<Autor> busqueda(@Param("query") String query, Pageable pageable);
+    @Query(value = "SELECT DISTINCT a FROM Autor a " +
+            "LEFT JOIN a.autorPremios ap " +
+            "LEFT JOIN ap.premio p " +
+            "WHERE (:query IS NULL OR :query = '' OR " +
+            "LOWER(a.nomAutor) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(a.apellido1) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(a.apellido2) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:premioQuery IS NULL OR :premioQuery = '' OR " +
+            "LOWER(COALESCE(p.nomPremio, '')) LIKE LOWER(CONCAT('%', :premioQuery, '%')))",
+            countQuery = "SELECT COUNT(DISTINCT a.id) FROM Autor a " +
+                    "LEFT JOIN a.autorPremios ap " +
+                    "LEFT JOIN ap.premio p " +
+                    "WHERE (:query IS NULL OR :query = '' OR " +
+                    "LOWER(a.nomAutor) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                    "LOWER(a.apellido1) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+                    "LOWER(a.apellido2) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+                    "AND (:premioQuery IS NULL OR :premioQuery = '' OR " +
+                    "LOWER(COALESCE(p.nomPremio, '')) LIKE LOWER(CONCAT('%', :premioQuery, '%')))")
+    Page<Autor> busqueda(@Param("query") String query,
+                         @Param("premioQuery") String premioQuery,
+                         Pageable pageable);
 }

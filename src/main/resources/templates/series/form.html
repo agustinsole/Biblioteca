@@ -6,11 +6,25 @@
     <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" />
 </head>
 <body>
-<h1 th:text="${serie.id} != null ? 'Editar Serie' : 'Crear Serie'"></h1>
-<form th:action="@{/series}" th:object="${serie}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <div><label>Denominación</label><input type="text" th:field="*{denominacion}" /></div>
-    <div><button type="submit">Guardar</button><a th:href="@{/series}">Cancelar</a></div>
-</form>
+<div class="container py-4">
+    <div class="card shadow-sm" style="max-width: 480px;">
+        <div class="card-header">
+            <h5 class="mb-0" th:text="${serie.id} != null ? 'Editar Serie' : 'Crear Serie'"></h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/series}" th:object="${serie}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-dark">Denominación</label>
+                    <input type="text" class="form-control" th:field="*{denominacion}" autofocus />
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a th:href="@{/series}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>
