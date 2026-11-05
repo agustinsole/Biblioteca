@@ -41,7 +41,6 @@
             <tr>
                 <th style="width:72px;">Bandera</th>
                 <th style="width:320px;">Nombre</th>
-                <th style="width:220px;">Archivo bandera</th>
                 <th style="width:140px;" class="text-center">Acciones</th>
             </tr>
             </thead>
@@ -58,7 +57,6 @@
                 <td>
                     <strong th:text="${pais.nomPais}"></strong>
                 </td>
-                <td th:text="${pais.bandera != null and !#strings.isEmpty(pais.bandera) ? pais.bandera : 'N/A'}"></td>
                 <td class="text-center">
                     <a th:href="@{'/paises/view/' + ${pais.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -82,7 +80,7 @@
                 </td>
             </tr>
             <tr th:if="${paisesPage.content.isEmpty()}">
-                <td colspan="4" class="text-center text-muted">Sin países registrados</td>
+                <td colspan="3" class="text-center text-muted">Sin países registrados</td>
             </tr>
             </tbody>
         </table>

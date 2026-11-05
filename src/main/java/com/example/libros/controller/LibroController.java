@@ -110,11 +110,6 @@ public class LibroController {
         bindSerie(libro);
         bindAutorLibros(libro);
         bindLibroPremios(libro);
-        if (libro.getId() == null) {
-            Optional<Libro> last = repo.findTopByOrderByIdDesc();
-            libro.setId(last.map(l -> l.getId() + 1).orElse(1001));
-        }
-
         List<AutorLibro> autorItems = new ArrayList<>(libro.getAutorLibros());
         List<LibroPremio> premioItems = new ArrayList<>(libro.getLibroPremios());
 
@@ -123,18 +118,16 @@ public class LibroController {
         libro.setLibroPremios(new ArrayList<>());
         Libro libroPersistido = repo.save(libro);
 
-        autorLibroRepository.deleteByLibro_Id(libro.getId());
-        libroPremioRepository.deleteByLibro_Id(libro.getId());
+        autorLibroRepository.deleteByLibro_Id(libroPersistido.getId());
+        libroPremioRepository.deleteByLibro_Id(libroPersistido.getId());
 
         libro.setAutorLibros(autorItems);
-        assignAutorLibroIds(libro);
         if (!libro.getAutorLibros().isEmpty()) {
             libro.getAutorLibros().forEach(item -> item.setLibro(libroPersistido));
             autorLibroRepository.saveAll(libro.getAutorLibros());
         }
 
         libro.setLibroPremios(premioItems);
-        assignLibroPremioIds(libro);
         if (!libro.getLibroPremios().isEmpty()) {
             libro.getLibroPremios().forEach(item -> item.setLibro(libroPersistido));
             libroPremioRepository.saveAll(libro.getLibroPremios());
@@ -219,18 +212,6 @@ public class LibroController {
         }
     }
 
-    private void assignAutorLibroIds(Libro libro) {
-        if (libro.getAutorLibros() == null) {
-            return;
-        }
-        int nextId = autorLibroRepository.findTopByOrderByIdDesc().map(a -> a.getId() + 1).orElse(1);
-        for (AutorLibro item : libro.getAutorLibros()) {
-            if (item.getId() == null) {
-                item.setId(nextId++);
-            }
-        }
-    }
-
     private void bindLibroPremios(Libro libro) {
         if (libro.getLibroPremios() == null) {
             return;
@@ -240,18 +221,6 @@ public class LibroController {
             item.setId(null);
             item.setLibro(libro);
             premioRepository.findById(item.getPremio().getId()).ifPresent(item::setPremio);
-        }
-    }
-
-    private void assignLibroPremioIds(Libro libro) {
-        if (libro.getLibroPremios() == null) {
-            return;
-        }
-        int nextId = libroPremioRepository.findTopByOrderByIdDesc().map(LibroPremio::getId).map(id -> id + 1).orElse(1);
-        for (LibroPremio item : libro.getLibroPremios()) {
-            if (item.getId() == null) {
-                item.setId(nextId++);
-            }
         }
     }
 }

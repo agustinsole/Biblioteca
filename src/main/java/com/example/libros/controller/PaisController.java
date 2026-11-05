@@ -97,7 +97,8 @@ public class PaisController {
         Pais pais = p.get();
         List<com.example.libros.model.Autor> autoresPais = new ArrayList<>(pais.getAutores());
         autoresPais.sort(Comparator.comparing(
-            a -> a.getApellido1() == null ? "" : a.getApellido1().trim().toLowerCase()
+                com.example.libros.model.Autor::getFechaNacimiento,
+                Comparator.nullsLast(Comparator.reverseOrder())
         ));
         List<com.example.libros.model.Premio> premiosPais = new ArrayList<>(pais.getPremios());
         premiosPais.sort(

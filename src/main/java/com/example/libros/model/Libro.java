@@ -2,6 +2,7 @@ package com.example.libros.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,17 +11,19 @@ import java.util.List;
 public class Libro {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @NotBlank
+    @NotBlank(message = "El título es obligatorio")
     @Column(name = "nom_libro")
     private String nomLibro;
 
+    @NotNull(message = "El año es obligatorio")
     @Column(name = "ano")
     private Integer ano;
 
-    @NotBlank
+    @NotBlank(message = "La portada es obligatoria")
     @Column(name = "portada")
     private String portada;
 

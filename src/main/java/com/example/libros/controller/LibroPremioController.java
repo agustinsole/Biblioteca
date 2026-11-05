@@ -48,10 +48,6 @@ public class LibroPremioController {
             return "libro_premios/form";
         }
         bindLibroAndPremio(libroPremio);
-        if (libroPremio.getId() == null) {
-            Optional<LibroPremio> last = repo.findTopByOrderByIdDesc();
-            libroPremio.setId(last.map(l -> l.getId() + 1).orElse(1));
-        }
         repo.save(libroPremio);
         return "redirect:/libro-premios";
     }

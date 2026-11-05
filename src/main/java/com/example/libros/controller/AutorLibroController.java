@@ -48,10 +48,6 @@ public class AutorLibroController {
             return "autor_libro/form";
         }
         bindAutorAndLibro(autorLibro);
-        if (autorLibro.getId() == null) {
-            Optional<AutorLibro> last = repo.findTopByOrderByIdDesc();
-            autorLibro.setId(last.map(a -> a.getId() + 1).orElse(1));
-        }
         repo.save(autorLibro);
         return "redirect:/autor-libro";
     }

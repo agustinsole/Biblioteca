@@ -52,7 +52,6 @@
                 <th style="width:320px;">Nombre</th>
                 <th style="width:220px;">País</th>
                 <th style="width:90px;">Tipo</th>
-                <th style="width:220px;">Logotipo</th>
                 <th style="width:140px;" class="text-center">Acciones</th>
             </tr>
             </thead>
@@ -83,9 +82,6 @@
                           th:classappend="${premio.tipo == 'A'} ? ' text-bg-primary' : (${premio.tipo == 'L'} ? ' text-bg-success' : ' text-bg-secondary')"
                           th:text="${premio.tipo}"></span>
                 </td>
-                <td>
-                    <span th:text="${premio.logotipo != null and !#strings.isEmpty(premio.logotipo) ? premio.logotipo : 'N/A'}"></span>
-                </td>
                 <td class="text-center">
                     <a th:href="@{'/premios/view/' + ${premio.id}}" class="btn btn-outline-primary btn-sm p-1 me-1" title="Ver">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -109,7 +105,7 @@
                 </td>
             </tr>
             <tr th:if="${premiosPage.content.isEmpty()}">
-                <td colspan="6" class="text-center text-muted">Sin premios registrados</td>
+                <td colspan="5" class="text-center text-muted">Sin premios registrados</td>
             </tr>
             </tbody>
         </table>

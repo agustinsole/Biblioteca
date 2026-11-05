@@ -221,7 +221,7 @@ public class IAService {
         prompt.append("Usa primero los datos del JSON para responder. ")
             .append("IMPORTANTE: el nombre del autor puede estar repartido en nomAutor, apellido1 y apellido2. ")
             .append("Si no encuentras la respuesta en el JSON, usa el contexto web. ")
-            .append("Los datos del JSON son de los libros que he leido.\\n\\n")
+            .append("Los libros del JSON son de los libros que he leido, y los autores que hay el JSON son los que escribieron esos libros.\\n\\n")
                 .append("DATOS_JSON:\\n")
                 .append(autoresJson)
                 .append("\\n\\n");

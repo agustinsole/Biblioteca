@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class LibroPremio {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
